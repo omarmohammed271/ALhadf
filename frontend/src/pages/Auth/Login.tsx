@@ -99,7 +99,7 @@ export default function Login(){
                         <form method="post" className="">
                             <div className="">
                                 {/* <label htmlFor="email" className="my-3 pb-3 font-bold text-lg">Email</label> */}
-                                <Input className={` ` + ( !account && !username ? `border-red-700 dark:border-red-500` : null )} placeholder="Email" type="text" id="username" required name="username" value={username} onChange={(e) => (setUsername(e.target.value))} />
+                                <Input className={` ` + ( !account && !username ? `border-red-700 dark:border-red-500` : null )} placeholder="Username" type="text" id="username" required name="username" value={username} onChange={(e) => (setUsername(e.target.value))} />
                             </div>
                             <div className="pt-5">
                                 {/* <label htmlFor="password" className="my-3 pb-3 font-bold text-lg">Password</label> */}
@@ -117,7 +117,7 @@ export default function Login(){
                         </form>
                     </div>
                     <div className="mt-5">
-                        <h1 className="max-md:text-sm text-muted-foreground"><strong>Email:</strong> demo@gmail.com</h1>
+                        <h1 className="max-md:text-sm text-muted-foreground"><strong>Username:</strong> demo</h1>
                         <h1 className="max-md:text-sm text-muted-foreground"><strong>Password:</strong> demo12345</h1>
                     </div>
                 </div>
