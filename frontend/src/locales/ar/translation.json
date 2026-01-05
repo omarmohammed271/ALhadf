@@ -1,0 +1,270 @@
+{
+    "dashboards": {
+      "er": "لوحة تجربة مرضى الطوارئ"
+    },
+  
+    "er": {
+      "statCards": {
+        "avgTimeToFirstContact": "متوسط الوقت حتى أول تواصل سريري",
+        "pctTimelyCommunication": "نسبة المرضى الذين تلقوا تواصلًا في الوقت المناسب",
+        "overallPatientSatisfaction": "معدل رضا المرضى العام",
+        "lwbsRate": "نسبة المرضى الذين غادروا قبل الخدمة",
+        "revisitRate72h": "نسبة إعادة الزيارة (72 ساعة)",
+        "highDissatisfactionRisk": "زيارات ذات مخاطر عالية لعدم الرضا"
+      },
+  
+      "charts": {
+        "arrivalToFirstContact": {
+          "title": "من الوصول إلى أول تواصل طبي",
+          "xAxisLabel": "التاريخ",
+          "yAxisLabel": "متوسط الدقائق",
+          "minutes": "دقائق",
+          "dailyAverage": "المتوسط اليومي",
+          "weeklyAverage": "المتوسط الاسبوعي",
+          "threshold": "الحد الأدنى"
+        },
+
+        "waitingTimeByTriage": {
+          "title": "توزيع أوقات الانتظار حسب مستوى الفرز",
+          "yAxisLabel": "الدقائق"
+        },
+
+        "communicationCoverage": {
+          "title": "نسبة التغطية الاتصالية",
+          "yAxisLabel": "نسبة الزيارات التي تم التواصل فيها",
+          "thresholdLabel": "الحد الأدنى المستهدف"
+        },
+
+        "timeToFirstCommunication": {
+          "title": "الزمن حتى التواصل الأول",
+          "yAxisLabel": "الدقائق",
+          "threshold": "الحد المسموح"
+        },
+
+        "losVsSatisfaction": {
+          "title": "مدة البقاء مقابل رضا المرضى",
+          "labels": {
+            "los": "مدة البقاء",
+            "satisfaction": "الرضا"
+          },
+          "threshold": "الحد المسموح"
+        },
+
+        "firstContactDelay": {
+          "title": "تأثير تأخير الاتصال الأول",
+          "yAxisLabel": "متوسط الرضا",
+          "threshold": "الحد الحرج"
+        },
+
+        "lwbsRate": {
+          "title": "نسبة المغادرة قبل المعاينة حسب قسم الطوارئ",
+          "yAxisLabel": "نسبة المغادرة قبل المعاينة",
+          "threshold": "حد التنبيه"
+        },
+
+        "revisitVsCommunication": {
+          "title": "معدل إعادة الزيارة مقابل وجود التواصل",
+          "yAxisLabel": "معدل إعادة الزيارة",
+          "threshold": "الحد المستهدف"
+        },
+
+        "satisfactionByShiftPressure": {
+          "title": "رضا المرضى حسب الوردية ومستوى الضغط",
+          "xAxisLabel": "الوردية",
+          "yAxisLabel": "مستوى الضغط",
+          "satisfaction": "رضا المرضى (%)"
+        },
+
+        "dissatisfactionRiskBySection": {
+          "title": "مخاطر عدم رضا المرضى حسب قسم الطوارئ",
+          "riskScore": "مستوى المخاطر"
+        }
+  
+      },
+  
+      "detailsDialog": {
+        "summary": "الملخص",
+        "data": "البيانات والفلاتر",
+        "insights": "الاستنتاجات",
+        "noSummary": "لا يوجد ملخص متاح.",
+        "noData": "لا توجد بيانات أو فلاتر للعرض.",
+        "noInsights": "لا توجد استنتاجات متاحة."
+      }
+    },
+
+  "dataForm": {
+    "sections": {
+      "erVisitCoreData": {
+        "title": "البيانات الأساسية لزيارة الطوارئ",
+        "description": "الطوابع الزمنية التشغيلية والسريرية الأساسية لزيارة قسم الطوارئ."
+      },
+      "patientSatisfaction": {
+        "title": "مؤشرات رضا المريض",
+        "description": "مقاييس تجربة المريض المُبلغ عنها بعد الزيارة."
+      },
+      "communicationEvent": {
+        "title": "مؤشرات التواصل",
+        "description": "أحداث التواصل المسجلة بين الطاقم الطبي والمريض."
+      },
+      "experienceFailures": {
+        "title": "مؤشرات فشل التجربة",
+        "description": "مؤشرات مستخرجة آليًا تُبرز أوجه القصور في تجربة المريض."
+      }
+    },
+    "fields": {
+      "patient": {
+        "label": "مرجع المريض",
+        "description": "معرّف فريد للمريض مثل رقم الملف الطبي أو المعرّف الداخلي."
+      },
+      "arrivalTimestamp": {
+        "label": "وقت الوصول",
+        "description": "الوقت الذي وصل فيه المريض إلى قسم الطوارئ."
+      },
+      "triageTimestamp": {
+        "label": "وقت الفرز",
+        "description": "الوقت الذي تم فيه إجراء الفرز الطبي الأولي للمريض."
+      },
+      "firstClinicalContact": {
+        "label": "أول تواصل سريري",
+        "description": "وقت أول تفاعل سريري مباشر مع المريض."
+      },
+      "dispositionTimestamp": {
+        "label": "وقت اتخاذ القرار",
+        "description": "الوقت الذي تم فيه اتخاذ قرار التصرف النهائي."
+      },
+      "triageLevel": {
+        "label": "مستوى الفرز",
+        "description": "مستوى الخطورة السريرية المحدد أثناء الفرز.",
+        "placeholder": "اختر مستوى الفرز"
+      },
+      "erSection": {
+        "label": "قسم الطوارئ",
+        "description": "المنطقة داخل قسم الطوارئ التي تم فيها التعامل مع المريض.",
+        "placeholder": "اختر قسم الطوارئ"
+      },
+      "dispositionType": {
+        "label": "نوع التصرف",
+        "description": "نتيجة زيارة الطوارئ.",
+        "placeholder": "اختر نوع التصرف"
+      },
+      "ageGroup": {
+        "label": "الفئة العمرية",
+        "description": "تصنيف عمر المريض وقت الزيارة.",
+        "placeholder": "اختر الفئة العمرية"
+      },
+      "revisit72h": {
+        "label": "إعادة زيارة خلال 72 ساعة",
+        "description": "يشير إلى ما إذا عاد المريض إلى الطوارئ خلال 72 ساعة."
+      },
+      "visit": {
+        "label": "مرجع زيارة الطوارئ",
+        "description": "معرّف يربط هذا السجل بزيارة طوارئ محددة."
+      },
+      "satisfaction": {
+        "overall": "الرضا العام",
+        "waiting": "الرضا عن وقت الانتظار",
+        "communication": "الرضا عن التواصل",
+        "respect": "الاحترام والكرامة",
+        "description": "تقييم المريض على مقياس من 1 إلى 5.",
+        "placeholder": "اختر التقييم"
+      },
+      "freeTextComment": {
+        "label": "تعليق المريض",
+        "description": "ملاحظات نصية اختيارية يقدمها المريض.",
+        "placeholder": "أدخل ملاحظات المريض"
+      },
+      "eventType": {
+        "label": "نوع الحدث",
+        "description": "نوع التواصل الذي تم.",
+        "placeholder": "اختر نوع الحدث"
+      },
+      "staffRole": {
+        "label": "دور الموظف",
+        "description": "دور عضو الطاقم المشارك في التواصل.",
+        "placeholder": "اختر دور الموظف"
+      },
+      "initiatedBy": {
+        "label": "تم البدء بواسطة",
+        "description": "الجهة التي بدأت التواصل.",
+        "placeholder": "اختر الجهة المبادِرة"
+      },
+      "communicationEvent": {
+        "label": "مرجع حدث التواصل",
+        "description": "ربط اختياري بحدث تواصل محدد."
+      },
+      "lwbs": {
+        "label": "غادر دون أن يُرى (LWBS)",
+        "description": "يشير إلى ما إذا غادر المريض قبل التقييم السريري."
+      },
+      "revisitReason": {
+        "label": "سبب إعادة الزيارة",
+        "description": "السبب الرئيسي لعودة المريض إلى الطوارئ.",
+        "placeholder": "اختر سبب إعادة الزيارة"
+      },
+      "metadata": {
+        "label": "البيانات الوصفية",
+        "description": "سياق إضافي منظم محفوظ بصيغة JSON."
+      },
+      "readOnly": {
+        "timeToFirstContact": "الوقت حتى أول تواصل",
+        "timeWithoutCommunication": "الوقت بدون تواصل"
+      }
+    },
+    "options": {
+      "triageLevels": {
+        "1": "المستوى 1 – إنعاش",
+        "2": "المستوى 2 – حالة طارئة",
+        "3": "المستوى 3 – عاجل",
+        "4": "المستوى 4 – أقل إلحاحًا",
+        "5": "المستوى 5 – غير عاجل"
+      },
+      "main": {
+        "resus": "الطوارئ الرئيسية"
+      },
+      "fastTrack": {
+        "resus": "المسار السريع"
+      },
+      "trauma": {
+        "resus": "وحدة الإصابات"
+      },
+      "peds": {
+        "resus": "طب الأطفال"
+      },
+      "dispositionTypes": {
+        "admitted": "تم التنويم",
+        "discharged": "تم الخروج",
+        "lwbs": "غادر دون أن يُرى",
+        "transferred": "تم التحويل"
+      },
+      "ageGroups": {
+        "child": "طفل",
+        "teen": "مراهق",
+        "youngAdult": "شاب",
+        "adult": "بالغ",
+        "senior": "كبير سن"
+      },
+      "communicationEvent": {
+        "initial": "تواصل أولي",
+        "delayUpdate": "تحديث تأخير",
+        "clinicalUpdate": "تحديث سريري",
+        "other": "أخرى"
+      },
+      "roles": {
+        "nurse": "ممرض",
+        "physician": "طبيب",
+        "admin": "إداري"
+      },
+      "initiatedBy": {
+        "staff": "الطاقم",
+        "patient": "المريض"
+      },
+      "revisitReasons": {
+        "worsening": "تفاقم الأعراض",
+        "newIssue": "مشكلة جديدة غير مرتبطة",
+        "planned": "متابعة مخططة"
+      }
+    }
+  }
+    
+}
+  

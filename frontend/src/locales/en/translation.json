@@ -1,0 +1,298 @@
+{
+    "dashboards": {
+      "er": "ER Patient Experience Dashboard"
+    },
+  
+    "er": {
+      "statCards": {
+        "avgTimeToFirstContact": "Average Time to First Clinical Contact",
+        "pctTimelyCommunication": "Percentage of Patients Receiving Timely Communication",
+        "overallPatientSatisfaction": "Overall Patient Satisfaction Score",
+        "lwbsRate": "LWBS Rate",
+        "revisitRate72h": "Revisit Rate (72 Hours)",
+        "highDissatisfactionRisk": "High Dissatisfaction Risk Visits"
+      },
+  
+      "charts": {
+        "arrivalToFirstContact": {
+          "title": "Arrival to First Clinical Contact",
+          "yAxisLabel": "Average Minutes",
+          "xAxisLabel": "Date",
+          "minutes": "Mins",
+          "dailyAverage": "Daily Average",
+          "weeklyAverage": "Weekly Average",
+          "threshold": "Threshold"
+        },
+
+        "waitingTimeByTriage": {
+          "title": "Waiting Time by Triage Level",
+          "yAxisLabel": "Minutes"
+        },
+
+        "communicationCoverage": {
+          "title": "Communication Coverage Rate",
+          "yAxisLabel": "% of Visits with Communication",
+          "thresholdLabel": "Target Threshold"
+        },
+
+        "timeToFirstCommunication": {
+          "title": "Time to First Communication",
+          "yAxisLabel": "Minutes",
+          "threshold": "Target Threshold"
+        },
+
+        "losVsSatisfaction": {
+          "title": "Length of Stay vs Satisfaction",
+          "labels": {
+            "los": "Length of Stay",
+            "satisfaction": "Satisfaction"
+          },
+          "threshold": "Threshold"
+        },
+
+        "firstContactDelay": {
+          "title": "First Contact Delay Impact",
+          "yAxisLabel": "Avg Satisfaction",
+          "threshold": "Critical Threshold"
+        },
+
+        "lwbsRate": {
+          "title": "LWBS Rate by ER Section",
+          "yAxisLabel": "LWBS Rate",
+          "threshold": "Alert Threshold"
+        },
+
+        "revisitVsCommunication": {
+          "title": "Revisit Rate vs Communication Presence",
+          "yAxisLabel": "Revisit Rate",
+          "threshold": "Target Threshold"
+        },
+
+        "satisfactionByShiftPressure": {
+          "title": "Satisfaction by Shift & Pressure Level",
+          "xAxisLabel": "Shift",
+          "yAxisLabel": "Pressure Level",
+          "satisfaction": "Patient Satisfaction (%)"
+        },
+
+        "dissatisfactionRiskBySection": {
+          "title": "Dissatisfaction Risk by ER Section",
+          "riskScore": "Risk Score"
+        }
+  
+      },
+  
+      "detailsDialog": {
+        "summary": "Summary",
+        "data": "Data & Filters",
+        "insights": "Insights",
+        "noSummary": "No summary available.",
+        "noData": "No data or filters to display.",
+        "noInsights": "No insights available."
+      }
+    },
+  
+  "dataForm": {
+    "sections": {
+      "erVisitCoreData": {
+        "title": "ER Visit Core Data",
+        "description": "Primary operational and clinical timestamps for the emergency visit."
+      },
+      "patientSatisfaction": {
+        "title": "Patient Satisfaction Signals",
+        "description": "Patient-reported experience measures collected after the visit."
+      },
+      "communicationEvent": {
+        "title": "Communication Signals",
+        "description": "Recorded communication events between staff and patient."
+      },
+      "experienceFailures": {
+        "title": "Experience Failure Indicators",
+        "description": "System-derived indicators highlighting breakdowns in patient experience."
+      }
+    },
+
+    "fields": {
+      "patient": {
+        "label": "Patient Reference",
+        "description": "Unique patient identifier such as MRN or internal patient ID."
+      },
+
+      "arrivalTimestamp": {
+        "label": "Arrival Time",
+        "description": "Timestamp when the patient arrived at the emergency department."
+      },
+
+      "triageTimestamp": {
+        "label": "Triage Time",
+        "description": "Time when the patient was first triaged by clinical staff."
+      },
+
+      "firstClinicalContact": {
+        "label": "First Clinical Contact",
+        "description": "Timestamp of the first direct clinical interaction with the patient."
+      },
+
+      "dispositionTimestamp": {
+        "label": "Disposition Time",
+        "description": "Time when the final disposition decision was made."
+      },
+
+      "triageLevel": {
+        "label": "Triage Level",
+        "description": "Clinical urgency level assigned during triage.",
+        "placeholder": "Select triage level"
+      },
+
+      "erSection": {
+        "label": "ER Section",
+        "description": "Emergency department area where the patient was managed.",
+        "placeholder": "Select ER section"
+      },
+
+      "dispositionType": {
+        "label": "Disposition Type",
+        "description": "Outcome of the emergency visit.",
+        "placeholder": "Select disposition"
+      },
+
+      "ageGroup": {
+        "label": "Age Group",
+        "description": "Age category of the patient at the time of visit.",
+        "placeholder": "Select age group"
+      },
+
+      "revisit72h": {
+        "label": "72-Hour Revisit",
+        "description": "Indicates whether the patient revisited the ER within 72 hours."
+      },
+
+      "visit": {
+        "label": "ER Visit Reference",
+        "description": "Identifier linking this record to a specific ER visit."
+      },
+
+      "satisfaction": {
+        "overall": "Overall Satisfaction",
+        "waiting": "Waiting Time Satisfaction",
+        "communication": "Communication Satisfaction",
+        "respect": "Respect & Dignity",
+        "description": "Patient-rated score on a scale from 1 to 5.",
+        "placeholder": "Select score"
+      },
+
+      "freeTextComment": {
+        "label": "Patient Comment",
+        "description": "Optional free-text feedback provided by the patient.",
+        "placeholder": "Enter patient feedback"
+      },
+
+      "eventType": {
+        "label": "Event Type",
+        "description": "Type of communication that occurred.",
+        "placeholder": "Select event type"
+      },
+
+      "staffRole": {
+        "label": "Staff Role",
+        "description": "Role of the staff member involved in the communication.",
+        "placeholder": "Select staff role"
+      },
+
+      "initiatedBy": {
+        "label": "Initiated By",
+        "description": "Party who initiated the communication.",
+        "placeholder": "Select initiator"
+      },
+
+      "communicationEvent": {
+        "label": "Communication Event Reference",
+        "description": "Optional link to a specific communication event."
+      },
+
+      "lwbs": {
+        "label": "Left Without Being Seen (LWBS)",
+        "description": "Indicates whether the patient left before clinical evaluation."
+      },
+
+      "revisitReason": {
+        "label": "Revisit Reason",
+        "description": "Primary reason for the patient returning to the ER.",
+        "placeholder": "Select revisit reason"
+      },
+
+      "metadata": {
+        "label": "Metadata",
+        "description": "Additional structured context stored as JSON."
+      },
+
+      "readOnly": {
+        "timeToFirstContact": "Time to First Contact",
+        "timeWithoutCommunication": "Time Without Communication"
+      }
+    },
+
+    "options": {
+      "triageLevels": {
+        "1": "Level 1 – Resuscitation",
+        "2": "Level 2 – Emergent",
+        "3": "Level 3 – Urgent",
+        "4": "Level 4 – Less Urgent",
+        "5": "Level 5 – Non-Urgent"
+      },
+
+      "main": {
+        "resus": "Main ER"
+      },
+      "fastTrack": {
+        "resus": "Fast Track"
+      },
+      "trauma": {
+        "resus": "Trauma Unit"
+      },
+      "peds": {
+        "resus": "Pediatrics"
+      },
+
+      "dispositionTypes": {
+        "admitted": "Admitted",
+        "discharged": "Discharged",
+        "lwbs": "Left Without Being Seen",
+        "transferred": "Transferred"
+      },
+
+      "ageGroups": {
+        "child": "Child",
+        "teen": "Teenager",
+        "youngAdult": "Young Adult",
+        "adult": "Adult",
+        "senior": "Senior"
+      },
+
+      "communicationEvent": {
+        "initial": "Initial Communication",
+        "delayUpdate": "Delay Update",
+        "clinicalUpdate": "Clinical Update",
+        "other": "Other"
+      },
+
+      "roles": {
+        "nurse": "Nurse",
+        "physician": "Physician",
+        "admin": "Administrative Staff"
+      },
+
+      "initiatedBy": {
+        "staff": "Staff",
+        "patient": "Patient"
+      },
+
+      "revisitReasons": {
+        "worsening": "Symptoms Worsened",
+        "newIssue": "New Unrelated Issue",
+        "planned": "Planned Follow-up"
+      }
+    }
+  }
+}
+  

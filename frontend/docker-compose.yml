@@ -1,0 +1,20 @@
+services:
+  frontendbin:
+    image: frontendbin
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+    networks:
+      - app-network  
+    ports:
+      - "3002:3002"
+    # Add restart policy and working directory
+    restart: unless-stopped
+    working_dir: /app
+
+networks:
+  app-network:
+    driver: bridge
