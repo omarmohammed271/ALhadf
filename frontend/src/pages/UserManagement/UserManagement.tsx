@@ -162,7 +162,7 @@ export default function UserManagement() {
                     <TableCell>{user.username ?? "-"}</TableCell>
                     <TableCell>{user.email ?? "-"}</TableCell>
                     <TableCell>{user.profile?.phone_number ?? "-"}</TableCell>
-                    <TableCell>{user.position ?? "-"}</TableCell>
+                    <TableCell>{user.profile?.position ?? "-"}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
