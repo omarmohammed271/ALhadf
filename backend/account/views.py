@@ -40,10 +40,13 @@ class CustomLoginView(ObtainAuthToken):
             return Response({"error": "Account is inactive"}, status=status.HTTP_403_FORBIDDEN)
 
         token, created = Token.objects.get_or_create(user=user)
+        profile = UserProfile.objects.get(user=user)
         return Response({
             'token': token.key,
+            'email': user.email,
             'username': user.username,
             'user_id': user.pk,
+            'position': profile.position,
             'first_name': user.first_name,
             'last_name': user.last_name,
         })

@@ -13,12 +13,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ['first_name', 'last_name', 'phone_number', 'department', 'position', 'metadata']
 
-        def validate_phone_number(self, value):
-            # Basic validation for phone format (Workflow #2)
-            if value and not re.match(r'^\+?1?\d{9,15}$', value):
-                raise serializers.ValidationError(
-                    "Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-            return value
 
     def update(self, instance, validated_data):
         # Because we used 'source', we have to manually handle

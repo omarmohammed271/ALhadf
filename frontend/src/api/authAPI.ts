@@ -1,11 +1,17 @@
 import { axiosInstance, axiosMutateInstance } from "./axiosInstance";
 
 export interface LoginData{
-    email: string,
+    username: string,
     password: string,
 }
 
 export const handleLogin = async (data: LoginData) => {
-    // Temporary
-    return axiosMutateInstance.post(`api/users/login/`, data).then(res => res.data);
+    return axiosMutateInstance.post(`api/account/login/`, data).then(res => res.data);
 }
+
+export const getUsers = async (data: any) => {
+    return axiosInstance.get(`api/account/users/`, data).then(res => res.data);
+}
+
+
+

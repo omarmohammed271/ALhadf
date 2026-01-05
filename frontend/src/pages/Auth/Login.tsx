@@ -1,61 +1,60 @@
+import { handleLogin } from "@/api/authAPI";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/authStore";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login(){
 
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [account, setAccount] = useState<boolean>(true);
     const [isError, setIsError] = useState<boolean>(false);
-    const [isPending, setIsPending] = useState<boolean>(false);
-    const [isSuccess, setIsSuccess] = useState<boolean>(false);
     const timeoutRef = useRef<number | null>(null);
 
     const setUserData = useUserStore((state) => state.setUserData);
 
-    const users = {
-        email: 'demo@gmail.com',
-        password: 'demo12345',
-    }
+
+    const {mutate: loginMutation, isPending, isSuccess } = useMutation({
+        mutationKey: ["login"],
+        mutationFn: handleLogin,
+        onSuccess(data) {
+            console.log(data);
+            toast.success("Successfully Logged In.")
+            setUserData({
+                id: data.id,
+                username: data.username,
+                email: data.email,
+                token: data.token,
+                position: data.position,
+                role: "",
+                first_name: data.first_name,
+                last_name: data.last_name,
+                isLogged: true,
+            });
+            navigate(`/dashboard`, { replace: true });
+        },
+        onError() {
+            toast.error("Could not log in.")
+        },
+    })
     
     const verifyUser = () => {
         
-        if (email && password ) {
+        if (username && password ) {
 
-            if (email == users.email && password == users.password){
-                setIsSuccess(true);
-                setIsError(false);
-                navigate(`/dashboard`, { replace: true });
-                localStorage.setItem('is-authenticated', "true");
-
-                setUserData({
-                    id: 1,
-                    username: "demo",
-                    email: "demo@gmail.co",
-                    token: "demo-token",
-                    role: "Viewer",
-                    isLogged: true,
-                });
-
-                console.log("Here");
-                setAccount(!true);
-            }
-            else{
-                setIsError(true);
-                setAccount(false);
-            }
+            loginMutation({username, password})
         }
         else{
             setIsError(true);
             setAccount(false);
         }
-        setIsPending(false)
     }
 
 
@@ -64,7 +63,6 @@ export default function Login(){
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         console.log("Hey");
         
-        setIsPending(true);
         timeoutRef.current = setTimeout(verifyUser, 1000);
     };
 
@@ -83,13 +81,13 @@ export default function Login(){
                 <div
                     className={cn(
                     "absolute inset-0",
-                    "[background-size:20px_20px]",
-                    "[background-image:radial-gradient(#d4d4d4_1px,transparent_1px)]",
-                    "dark:[background-image:radial-gradient(#111B45_1px,transparent_1px)]",
+                    "bg-size-[20px_20px]",
+                    "bg-[radial-gradient(#d4d4d4_1px,transparent_1px)]",
+                    "dark:bg-[radial-gradient(#111B45_1px,transparent_1px)]",
                     )}
                 />
                 {/* Radial gradient */}
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_0%,black)] dark:bg-background"></div>
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background mask-[radial-gradient(ellipse_at_center,transparent_0%,black)] dark:bg-background"></div>
 
                 <div className="p-5 border mt-10 border-border dark:border-border rounded-lg bg-background dark:bg-background md:min-w-96 mx-10 z-40">
                     <div>
@@ -101,7 +99,7 @@ export default function Login(){
                         <form method="post" className="">
                             <div className="">
                                 {/* <label htmlFor="email" className="my-3 pb-3 font-bold text-lg">Email</label> */}
-                                <Input className={` ` + ( !account && !email ? `border-red-700 dark:border-red-500` : null )} placeholder="Email" type="text" id="email" required name="email" value={email} onChange={(e) => (setEmail(e.target.value))} />
+                                <Input className={` ` + ( !account && !username ? `border-red-700 dark:border-red-500` : null )} placeholder="Email" type="text" id="username" required name="username" value={username} onChange={(e) => (setUsername(e.target.value))} />
                             </div>
                             <div className="pt-5">
                                 {/* <label htmlFor="password" className="my-3 pb-3 font-bold text-lg">Password</label> */}

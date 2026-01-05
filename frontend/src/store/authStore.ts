@@ -7,6 +7,9 @@ type UserData = {
     email: string,
     token: string;
     role: string;
+    first_name: string;
+    last_name: string;
+    position: string;
     isLogged: boolean;
 }
 
@@ -20,11 +23,14 @@ export const useUserStore = create(
     persist<UserStore>(
         (set) => ({
             userData: {
-                userId: "tttt",
+                id: "tttt",
                 role: "tttt",
                 username: "demo",
                 email: "demo@gmail.com",
                 token: "tttt",
+                first_name: "string",
+                last_name: "string",
+                position: "Staff",
                 isLogged: true,
             },
             setUserData: (data) => set(() => ({userData: data})),

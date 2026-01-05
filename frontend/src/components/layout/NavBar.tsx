@@ -6,6 +6,7 @@ import { LanguageSwitch } from "../ui/LanguageSwitch";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import UserDropDown from "@/components/UserDropDown/UserDropDown";
+import { useUserStore } from "@/store/authStore";
 
 
 function NavBar(){
@@ -13,9 +14,9 @@ function NavBar(){
     const navigate = useNavigate();
     const location = useLocation();
 
+    const userData = useUserStore((state) => state.userData);
     useEffect(() => {
-        const isAuthenticated = localStorage.getItem("is-authenticated");
-        if (isAuthenticated != "true") {
+        if (userData.isLogged != true) {
             navigate("/auth/login", { replace: true });
         }
     }, [navigate]);

@@ -7,7 +7,7 @@ from .models import UserExtension, UserProfile
 def manage_user_profile(sender, instance, created, **kwargs):
     if created:
         # Create them for the first time
-        UserProfile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance, position="Staff")
         UserExtension.objects.create(user=instance)
     else:
         # Save them only if they already exist

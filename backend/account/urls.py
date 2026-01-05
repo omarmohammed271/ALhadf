@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RegisterView, CustomLoginView, UserProfileView, RoleViewSet, UserRoleViewSet, UserManagementViewSet, \
-    PermissionViewSet
+from .views import RegisterView, CustomLoginView, UserProfileView, RoleViewSet, UserRoleViewSet, UserManagementViewSet, PermissionViewSet
 
 router = DefaultRouter()
 router.register(r'permissions', PermissionViewSet, basename='permissions')
