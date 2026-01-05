@@ -1,0 +1,17 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from .models import UserExtension, UserProfile
+
+@receiver(post_save, sender=User)
+def manage_user_profile(sender, instance, created, **kwargs):
+    if created:
+        # Create them for the first time
+        UserProfile.objects.create(user=instance)
+        UserExtension.objects.create(user=instance)
+    else:
+        # Save them only if they already exist
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
+        if hasattr(instance, 'user_extension'):
+            instance.user_extension.save()
