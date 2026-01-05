@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from .models import Alert, UserAlert
 
 class AlertSerializer(serializers.ModelSerializer):
+    # user_ids = serializer
+    
     class Meta:
         model = Alert
         fields = [

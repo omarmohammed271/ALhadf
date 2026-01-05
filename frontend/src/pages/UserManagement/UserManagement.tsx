@@ -28,14 +28,12 @@ import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { handleCreateAlert, getUserAlerts } from "@/api/serviceAPI"; // getUserAlerts fetches alerts for a user
+import { handleCreateAlert, getUserAlerts } from "@/api/serviceAPI";
 import { toast } from "react-hot-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const users = [
-  { id: 1, firstName: "John", lastName: "Doe", username: "jdoe", email: "john@example.com", phone: "+201234567890", role: "Admin" },
-  { id: 2, firstName: "Sara", lastName: "Ali", username: "sali", email: "sara@example.com", phone: "+201987654321", role: "User" },
-];
+import { useUserStore } from "@/store/authStore";
+import { getUsers } from "@/api/authAPI";
+import { t } from "i18next";
 
 export default function UserManagement() {
   const [activeTab, setActiveTab] = useState("users");
@@ -48,11 +46,19 @@ export default function UserManagement() {
   const [level, setLevel] = useState("info");
   const [metadata, setMetadata] = useState("");
 
-  // Fetch alerts for selected user (if any)
-  const { data: alerts = [], isLoading, isError } = useQuery({
-    queryKey: ["userAlerts", selectedUser?.id], // unique key per user
-    queryFn: () => selectedUser ? getUserAlerts(selectedUser.id) : Promise.resolve([]),
-    enabled: !!selectedUser, // only fetch if user is selected
+  const userData = useUserStore(state => state.userData);
+  
+  // Fetch alerts for current user
+  const { data: alerts = [], isLoading: alertsLoading } = useQuery({
+    queryKey: ["userAlerts", userData?.id],
+    queryFn: () => getUserAlerts(userData?.id),
+    enabled: !!userData?.id,
+  });
+
+  // Fetch all users
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+    queryKey: ["all_users"],
+    queryFn: getUsers,
   });
 
   // Mutation for creating alerts
@@ -60,7 +66,7 @@ export default function UserManagement() {
     mutationFn: (data: { title: string; description: string; level: string; metadata: any; user_ids: number[] }) =>
       handleCreateAlert(data),
     onSuccess: () => {
-      toast.success(`Alert sent successfully to ${selectedUser?.firstName || "all users"}`);
+      toast.success(`Alert sent successfully to ${selectedUser?.profile?.first_name || "all users"}`);
       setOpen(false);
       setTitle("");
       setDescription("");
@@ -78,7 +84,11 @@ export default function UserManagement() {
   });
 
   const handleSend = () => {
-    if (!title || !description) return;
+    if (mutation.isPending) return;
+    if (!title || !description) {
+      toast.error("Title and description are required");
+      return;
+    }
 
     let parsedMetadata = {};
     try {
@@ -93,7 +103,7 @@ export default function UserManagement() {
       description,
       level,
       metadata: parsedMetadata,
-      user_ids: selectedUser ? [selectedUser.id] : users.map(u => u.id), // support Notify All
+      user_ids: selectedUser ? [selectedUser.id] : allUsers.map((u: any) => u.id),
     });
   };
 
@@ -109,75 +119,90 @@ export default function UserManagement() {
         <TabsContent value="users">
           <div className="flex justify-between">
             <div>
-              <h1 className="text-4xl font-bold my-5">Users in the system</h1>
+              <h1 className="text-4xl font-bold my-5">{t("users.title")}</h1>
               <h2 className="text-xl my-5 text-muted-foreground">
-                Here, you can view all the users in the system and send alerts.
+                {t('users.subtitle')}
               </h2>
             </div>
             <div className="flex items-end py-5">
-              <Button className="text-white" onClick={() => { setSelectedUser(null); setOpen(true); }}>
+              <Button 
+                className="text-white" 
+                onClick={() => { 
+                  setSelectedUser(null); 
+                  setOpen(true); 
+                }}
+                disabled={usersLoading}
+              >
                 Notify All
               </Button>
             </div>
           </div>
 
-          <Table className="bg-primary/5 backdrop-blur-2xl p-10 rounded-2xl overflow-hidden border-border">
-            <TableHeader>
-              <TableRow className="*:p-5 border-border bg-secondary/10 hover:bg-secondary/5 rounded-2xl">
-                <TableHead>First Name</TableHead>
-                <TableHead>Last Name</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="w-10" />
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {users.map((user) => (
-                <TableRow className="*:px-5 border-border" key={user.id}>
-                  <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.lastName}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="border-border" align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setOpen(true);
-                          }}
-                        >
-                          Notify
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {usersLoading ? (
+            <p className="text-muted-foreground">Loading users...</p>
+          ) : (
+            <Table className="bg-primary/5 backdrop-blur-2xl p-10 rounded-2xl overflow-hidden border-border">
+              <TableHeader>
+                <TableRow className="*:p-5 border-border bg-secondary/10 hover:bg-secondary/5 rounded-2xl">
+                  <TableHead>First Name</TableHead>
+                  <TableHead>Last Name</TableHead>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Position</TableHead>
+                  <TableHead className="w-10" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+
+              <TableBody>
+                {allUsers.map((user: any) => (
+                  <TableRow className="*:px-5 border-border" key={user.id}>
+                    <TableCell>{user.profile?.first_name ?? "-"}</TableCell>
+                    <TableCell>{user.profile?.last_name ?? "-"}</TableCell>
+                    <TableCell>{user.username ?? "-"}</TableCell>
+                    <TableCell>{user.email ?? "-"}</TableCell>
+                    <TableCell>{user.profile?.phone_number ?? "-"}</TableCell>
+                    <TableCell>{user.position ?? "-"}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="border-border" align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setOpen(true);
+                            }}
+                          >
+                            Notify
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
 
           {/* Alert Dialog */}
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="text-foreground border-border">
+            <DialogContent className="text-foreground border-border max-w-2xl">
               <DialogHeader>
                 <DialogTitle>
-                  Notify {selectedUser?.firstName ?? "All Users"} {selectedUser?.lastName ?? ""}
+                  Notify {selectedUser?.profile?.first_name ?? "All Users"} {selectedUser?.profile?.last_name ?? ""}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4">
-                <Input placeholder="Alert title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <Input 
+                  placeholder="Alert title" 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
+                />
                 <Textarea
                   placeholder="Alert description"
                   value={description}
@@ -203,8 +228,14 @@ export default function UserManagement() {
               </div>
 
               <DialogFooter className="space-x-2">
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={handleSend} disabled={mutation.isPending} className="text-white">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSend} 
+                  disabled={mutation.isPending}
+                  className="text-white"
+                >
                   {mutation.isPending ? "Sending..." : "Send Alert"}
                 </Button>
               </DialogFooter>
@@ -214,13 +245,16 @@ export default function UserManagement() {
 
         {/* NOTIFICATIONS TAB */}
         <TabsContent value="notifications">
-            <div>
-              <h1 className="text-4xl font-bold my-5">My Alerts</h1>
-              <h2 className="text-xl my-5 text-muted-foreground">
-                Here, you can view all your alerts and toggle read/unread status.
-              </h2>
-            </div>
-          {alerts && alerts.length > 0 ? (
+          <div>
+            <h1 className="text-4xl font-bold my-5">{t('alerts.notify')}</h1>
+            <h2 className="text-xl my-5 text-muted-foreground">
+              {t('alerts.sub')}
+            </h2>
+          </div>
+
+          {alertsLoading ? (
+            <p className="text-muted-foreground">Loading alerts...</p>
+          ) : alerts.length > 0 ? (
             <Table className="bg-primary/5 backdrop-blur-2xl p-4 rounded-2xl overflow-hidden border-border">
               <TableHeader>
                 <TableRow className="*:p-3 border-border bg-secondary/10 hover:bg-secondary/5 rounded-2xl">
@@ -228,21 +262,37 @@ export default function UserManagement() {
                   <TableHead>Description</TableHead>
                   <TableHead>Level</TableHead>
                   <TableHead>Created At</TableHead>
+                  <TableHead>Is Read</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {alerts.map((alert: any) => (
-                  <TableRow key={alert.id}>
-                    <TableCell>{alert.title}</TableCell>
-                    <TableCell>{alert.description}</TableCell>
-                    <TableCell>{alert.level}</TableCell>
-                    <TableCell>{new Date(alert.triggered_at).toLocaleString()}</TableCell>
+                  <TableRow className="*:px-5 border-border" key={alert.id}>
+                    <TableCell>{alert.alert?.title ?? "-"}</TableCell>
+                    <TableCell>{alert.alert?.description ?? "-"}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        alert.alert?.level === 'critical' ? 'bg-red-100 text-red-800' :
+                        alert.alert?.level === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {alert.alert?.level ?? "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>{alert.alert?.triggered_at ? new Date(alert.alert.triggered_at).toLocaleString() : "-"}</TableCell>
+                    <TableCell>
+                      <span className={`font-medium ${
+                        alert.is_read ? 'text-green-700' : 'text-red-700'
+                      }`}>
+                        {alert.is_read ? 'Yes' : 'No'}
+                      </span>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
-            <p className="text-muted-foreground">No alerts found.</p>
+            <p className="text-muted-foreground text-center py-8">No alerts found.</p>
           )}
         </TabsContent>
       </Tabs>

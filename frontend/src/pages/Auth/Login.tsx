@@ -28,7 +28,7 @@ export default function Login(){
             console.log(data);
             toast.success("Successfully Logged In.")
             setUserData({
-                id: data.id,
+                id: data.user_id,
                 username: data.username,
                 email: data.email,
                 token: data.token,

@@ -293,6 +293,43 @@
         "planned": "Planned Follow-up"
       }
     }
-  }
+  },
+    "tabs": {
+      "users": "Users & Notify",
+      "notifications": "My Notifications"
+    },
+    "users": {
+      "title": "Users in the system",
+      "subtitle": "View users and send alerts",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "alerts": {
+      "notify": "All Notifications",
+      "notify_all": "Here, you can view all the notifications in the system.",
+      "sent": "Alert sent to {{user}}",
+      "failed": "Failed to send alert",
+      "invalid_metadata": "Metadata must be valid JSON",
+      "dialog_title": "Notify {{user}}",
+      "title": "Alert title",
+      "description": "Alert description",
+      "metadata": "Metadata (JSON)",
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical",
+      "all_users": "All Users",
+      "none": "No alerts found"
+    },
+    "common": {
+      "send": "Send",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "yes": "Yes",
+      "no": "No"
+    }
+  
 }
   
