@@ -31,9 +31,7 @@ class AlertViewSet(viewsets.ModelViewSet):
         Create alert and assign to specified users or all users.
         Expects user_ids as list in request.data['user_ids[]'].
         """
-        print(request.user)
         user_ids = request.data.get('user_ids', request.data.get('user_ids[]', []))
-        
         # Validate user_ids are integers
         try:
             user_ids = [int(uid) for uid in user_ids if uid]
@@ -63,7 +61,7 @@ class AlertViewSet(viewsets.ModelViewSet):
             
             # Bulk create user alerts
             user_alerts = [
-                UserAlert(user=user, alert=alert) 
+                UserAlert(user=user, alert=alert)
                 for user in users
             ]
             UserAlert.objects.bulk_create(user_alerts, ignore_conflicts=True)
