@@ -8,17 +8,27 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+
+
+class Permission(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=True, null=True)
+    metadata = models.JSONField(default=dict, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class UserExtension(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_extension')
     metadata = models.JSONField(default=dict, blank=True)
 
     def get_custom_permissions(self):
-        PermissionModel = apps.get_model('account', 'Permission')
-
         # query using the related_name paths we built in your models
-        return set(PermissionModel.objects.filter(
-            roles__user_roles__user=self
+        return set(Permission.objects.filter(
+            roles__role_assignment__user=self.user
         ).values_list('name', flat=True))
 
 
@@ -39,18 +49,8 @@ class UserProfile(models.Model):
         return f"{self.user.first_name} {self.user.last_name} ({self.position})"
 
 
-class Permission(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True, null=True)
-    metadata = models.JSONField(default=dict, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Role(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
     metadata = models.JSONField(default=dict, blank=True)

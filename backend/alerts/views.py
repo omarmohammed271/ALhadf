@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -8,19 +9,30 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from .models import Alert, UserAlert
 from .serializers import AlertSerializer, UserAlertSerializer
+from account.permissions import HasERPermission
 
 
 class AlertViewSet(viewsets.ModelViewSet):
     queryset = Alert.objects.all().order_by('-triggered_at')
     serializer_class = AlertSerializer
-    # permission_classes = [IsAdminUser]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'send_alerts'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
         """
         Create alert and assign to specified users or all users.
         Expects user_ids as list in request.data['user_ids[]'].
         """
-        user_ids = request.data.get('user_ids[]', [])
+        print(request.user)
+        user_ids = request.data.get('user_ids', request.data.get('user_ids[]', []))
         
         # Validate user_ids are integers
         try:

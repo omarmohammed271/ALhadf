@@ -41,6 +41,10 @@ class CustomLoginView(ObtainAuthToken):
 
         token, created = Token.objects.get_or_create(user=user)
         profile = UserProfile.objects.get(user=user)
+
+        # Get all roles assigned to this user
+        roles = list(user.user_roles.all().values_list('role__name', flat=True))
+
         return Response({
             'token': token.key,
             'email': user.email,
@@ -49,6 +53,7 @@ class CustomLoginView(ObtainAuthToken):
             'position': profile.position,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'role': roles,
         })
 
 from rest_framework import viewsets
