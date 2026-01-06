@@ -154,15 +154,15 @@ export default function ProcurementDashboard() {
         <div className='md:flex mb-2 justify-center xl:flex-col max-xl:space-x-2 space-y-2 col-span-2 xl:col-span-1 p-2 bg-linear-to-br border-border from-primary/10 to-secondary/10 border rounded-xl '>
           <SatisfactionByShiftPressure
             data={[
-              { shift: 'Morning', pressureLevel: 'Low', satisfaction: 88 },
-              { shift: 'Morning', pressureLevel: 'Medium', satisfaction: 75 },
               { shift: 'Morning', pressureLevel: 'High', satisfaction: 62 },
-              { shift: 'Afternoon', pressureLevel: 'Low', satisfaction: 85 },
-              { shift: 'Afternoon', pressureLevel: 'Medium', satisfaction: 70 },
               { shift: 'Afternoon', pressureLevel: 'High', satisfaction: 55 },
-              { shift: 'Night', pressureLevel: 'Low', satisfaction: 80 },
-              { shift: 'Night', pressureLevel: 'Medium', satisfaction: 68 },
               { shift: 'Night', pressureLevel: 'High', satisfaction: 50 },
+              { shift: 'Morning', pressureLevel: 'Medium', satisfaction: 75 },
+              { shift: 'Afternoon', pressureLevel: 'Medium', satisfaction: 70 },
+              { shift: 'Night', pressureLevel: 'Medium', satisfaction: 68 },
+              { shift: 'Morning', pressureLevel: 'Low', satisfaction: 88 },
+              { shift: 'Afternoon', pressureLevel: 'Low', satisfaction: 85 },
+              { shift: 'Night', pressureLevel: 'Low', satisfaction: 80 },
             ]}
           />
           <DissatisfactionRiskBySection

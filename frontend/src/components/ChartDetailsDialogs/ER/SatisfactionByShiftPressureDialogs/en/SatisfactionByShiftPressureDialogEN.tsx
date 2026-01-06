@@ -85,16 +85,25 @@ const SatisfactionByShiftPressureDialogEN: React.FC<SatisfactionByShiftPressureD
           >
             <thead className="bg-muted/50">
               <tr>
-                <th className="border p-2 text-left">Shift</th>
                 <th className="border p-2 text-left">Pressure Level</th>
+                <th className="border p-2 text-left">Shift</th>
                 <th className="border p-2 text-left">Patient Satisfaction (%)</th>
               </tr>
             </thead>
             <tbody>
               {data.map((d, idx) => (
-                <tr key={idx}>
-                  <td className="border p-2">{d.shift}</td>
+                <tr key={idx}
+                  className={
+                    d.pressureLevel == "High" ? 
+                    `border-red-400 text-red-400`
+                    : d.pressureLevel == "Medium" ?
+                    `border-amber-200 text-amber-200`
+                    :
+                    `border-green-300 text-green-300`
+                  }
+                >
                   <td className="border p-2">{d.pressureLevel}</td>
+                  <td className="border p-2">{d.shift}</td>
                   <td className="border p-2 text-left">{d.satisfaction}%</td>
                 </tr>
               ))}
