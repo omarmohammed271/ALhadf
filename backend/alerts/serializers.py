@@ -2,6 +2,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Alert, UserAlert
+from account.serializers import UserListSerializer
+
 
 class AlertSerializer(serializers.ModelSerializer):
     # user_ids = serializer
@@ -16,6 +18,7 @@ class AlertSerializer(serializers.ModelSerializer):
 
 
 class UserAlertSerializer(serializers.ModelSerializer):
+    user = UserListSerializer(read_only=True)
     alert = AlertSerializer(read_only=True)
     alert_id = serializers.PrimaryKeyRelatedField(
         queryset=Alert.objects.all(),
