@@ -35,8 +35,8 @@ class ContextDataSerializer(serializers.ModelSerializer):
 class ExperienceFailureIndicatorSerializer(serializers.ModelSerializer):
     time_to_first_contact = serializers.DurationField(read_only=True)
     time_without_communication = serializers.DurationField(read_only=True)
-    visit = ERVisitSerializer()
-    comm_event = CommunicationEventSerializer()
+    visit = ERVisitSerializer(read_only=True)
+    comm_event = CommunicationEventSerializer(read_only=True)
 
     class Meta:
         model = ExperienceFailureIndicator
