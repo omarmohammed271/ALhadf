@@ -1,9 +1,11 @@
 from rest_framework import serializers
 from .models import ERVisit, CommunicationEvent, SatisfactionSignal, ExperienceFailureIndicator, ContextData
+from account.serializers import UserListSerializer
 
 
 class ERVisitSerializer(serializers.ModelSerializer):
     length_of_stay = serializers.DurationField(read_only=True)
+    patient = UserListSerializer(read_only=True)
 
     class Meta:
         model = ERVisit
@@ -13,12 +15,14 @@ class ERVisitSerializer(serializers.ModelSerializer):
 class CommunicationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunicationEvent
+        visit = ERVisitSerializer(read_only=True)
         fields = '__all__'
 
 
 class SatisfactionSignalSerializer(serializers.ModelSerializer):
     class Meta:
         model = SatisfactionSignal
+        visit = ERVisitSerializer(read_only=True)
         fields = '__all__'
 
 
@@ -31,6 +35,8 @@ class ContextDataSerializer(serializers.ModelSerializer):
 class ExperienceFailureIndicatorSerializer(serializers.ModelSerializer):
     time_to_first_contact = serializers.DurationField(read_only=True)
     time_without_communication = serializers.DurationField(read_only=True)
+    visit = ERVisitSerializer(read_only=True)
+    comm_event = CommunicationEventSerializer(read_only=True)
 
     class Meta:
         model = ExperienceFailureIndicator

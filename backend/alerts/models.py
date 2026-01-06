@@ -20,7 +20,7 @@ class Alert(models.Model):
         ('archived', 'Archived'),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     level = models.CharField(max_length=10, choices=Levels, default='info')

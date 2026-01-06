@@ -70,6 +70,8 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'permissions', 'metadata']
 
 class UserRoleSerializer(serializers.ModelSerializer):
+    user = UserListSerializer(read_only=True)
+    permissions = PermissionSerializer(many=True, read_only=True)
     class Meta:
         model = UserRole
         fields = ['user', 'role']
@@ -84,6 +86,8 @@ class RolePermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RolePermission
         fields = ['role', 'permission']
+        role = RoleSerializer(read_only=True)
+        permission = PermissionSerializer(many=True, read_only=True)
 
     def validate(self, data):
         # Rule: Roles cannot have duplicate permissions

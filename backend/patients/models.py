@@ -33,7 +33,7 @@ class ERVisit(models.Model):
         ('senior', 'Senior (65+)'),
     ]
 
-    visit_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    visit_id = models.BigAutoField(primary_key=True)
     patient = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
                                 related_name='er_visits')
     arrival_ts = models.DateTimeField(auto_now_add=True)
@@ -93,7 +93,7 @@ class CommunicationEvent(models.Model):
         ('patient', 'Patient/Family Request'),
     ]
 
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event_id = models.BigAutoField(primary_key=True)
     visit = models.ForeignKey(ERVisit, on_delete=models.CASCADE, related_name='communications')
     event_type = models.CharField(max_length=50, choices=Event, default='initial')
     event_ts = models.DateTimeField(auto_now_add=True)
@@ -111,7 +111,7 @@ class CommunicationEvent(models.Model):
 class SatisfactionSignal(models.Model):
     Score = [(i, str(i)) for i in range(1, 6)]
 
-    feedback_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    feedback_id = models.BigAutoField(primary_key=True)
     visit = models.ForeignKey(ERVisit, on_delete=models.CASCADE, related_name='signals')
     overall_score = models.IntegerField(choices=Score, null=True, blank=True,
                                         validators=[MinValueValidator(1), MaxValueValidator(5)])
@@ -155,7 +155,7 @@ class ContextData(models.Model):
         ('Peds', 'Pediatrics')
     ]
 
-    context_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    context_id = models.BigAutoField(primary_key=True)
     shift = models.CharField(max_length=50, choices=Shift, default='day')
     staffing_level = models.CharField(max_length=50, choices=Staffing, default='medium')
     er_capacity_level = models.CharField(max_length=50, choices=Capacity, default='at')
@@ -177,7 +177,7 @@ class ExperienceFailureIndicator(models.Model):
         ('planned', 'Planned Follow-up'),
     ]
 
-    indicator_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    indicator_id = models.BigAutoField(primary_key=True)
     visit = models.OneToOneField(ERVisit, on_delete=models.CASCADE, related_name='failure_report')
     comm_event = models.OneToOneField(CommunicationEvent, on_delete=models.SET_NULL, null=True, blank=True,
                                       related_name='failure_indicator')
