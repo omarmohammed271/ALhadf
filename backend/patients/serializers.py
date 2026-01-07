@@ -5,7 +5,7 @@ from account.serializers import UserListSerializer
 
 class ERVisitSerializer(serializers.ModelSerializer):
     length_of_stay = serializers.DurationField(read_only=True)
-    patient = UserListSerializer(read_only=True)
+    patient = UserListSerializer()
 
     class Meta:
         model = ERVisit
@@ -13,16 +13,16 @@ class ERVisitSerializer(serializers.ModelSerializer):
 
 
 class CommunicationEventSerializer(serializers.ModelSerializer):
+    visit = ERVisitSerializer()
     class Meta:
         model = CommunicationEvent
-        visit = ERVisitSerializer(read_only=True)
         fields = '__all__'
 
 
 class SatisfactionSignalSerializer(serializers.ModelSerializer):
+    visit = ERVisitSerializer()
     class Meta:
         model = SatisfactionSignal
-        visit = ERVisitSerializer(read_only=True)
         fields = '__all__'
 
 

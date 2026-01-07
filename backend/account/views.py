@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import status, generics
+from rest_framework.authentication import TokenAuthentication
+
 from .serializers import RegistrationSerializer, UserProfileSerializer, RolePermissionSerializer, UserListSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from .permissions import HasERPermission
 
 
 class RegisterView(generics.CreateAPIView):
@@ -82,6 +85,16 @@ class RoleViewSet(viewsets.ModelViewSet):
     """
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class PermissionViewSet(viewsets.ModelViewSet):
@@ -90,6 +103,16 @@ class PermissionViewSet(viewsets.ModelViewSet):
     """
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class UserRoleViewSet(viewsets.ModelViewSet):
@@ -98,11 +121,31 @@ class UserRoleViewSet(viewsets.ModelViewSet):
     """
     queryset = UserRole.objects.all()
     serializer_class = UserRoleSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
-class RolePermissionViewSet(viewsets.ModelViewSet):
+class RolePermissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    # def get_permissions(self):
+    #     if self.action == 'create':
+    #         self.required_permission = 'add_input'
+    #     else:
+    #         # Viewers and Admins can see the list
+    #         self.required_permission = 'view'
+    #     return super().get_permissions()
 
 
 class UserManagementViewSet(viewsets.ModelViewSet):
@@ -111,3 +154,13 @@ class UserManagementViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().select_related('profile') # optimized query
     serializer_class = UserListSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [HasERPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()

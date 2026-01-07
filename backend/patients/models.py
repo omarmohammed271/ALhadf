@@ -36,7 +36,7 @@ class ERVisit(models.Model):
     visit_id = models.BigAutoField(primary_key=True)
     patient = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
                                 related_name='er_visits')
-    arrival_ts = models.DateTimeField(auto_now_add=True)
+    arrival_ts = models.DateTimeField()
     triage_ts = models.DateTimeField(null=True, blank=True)
     first_contact_ts = models.DateTimeField(null=True, blank=True)
     disposition_ts = models.DateTimeField(null=True, blank=True)
@@ -56,11 +56,10 @@ class ERVisit(models.Model):
             models.Index(fields=['disposition_type']),
         ]
 
-    # def clean(self):
-    #     if self.arrival_ts and self.disposition_ts:
-    #         if self.disposition_ts < self.arrival_ts:
-    #             raise ValidationError("Disposition cannot be before arrival.")
-    #     super().clean()
+    def clean(self):
+        if self.arrival_ts and self.disposition_ts:
+            if self.disposition_ts < self.arrival_ts:
+                raise ValidationError("Disposition cannot be before arrival.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -149,17 +148,17 @@ class ContextData(models.Model):
         ('over', 'Over Capacity'),
     ]
     Section = [
-        ('Main', 'Main ER'),
-        ('FastTrack', 'Fast Track'),
-        ('Trauma', 'Trauma Bay'),
-        ('Peds', 'Pediatrics')
+        ('main', 'Main ER'),
+        ('fasttrack', 'Fast Track'),
+        ('trauma', 'Trauma Bay'),
+        ('peds', 'Pediatrics')
     ]
 
     context_id = models.BigAutoField(primary_key=True)
     shift = models.CharField(max_length=50, choices=Shift, default='day')
     staffing_level = models.CharField(max_length=50, choices=Staffing, default='medium')
     er_capacity_level = models.CharField(max_length=50, choices=Capacity, default='at')
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     er_section = models.CharField(max_length=50, choices=Section)
     metadata = models.JSONField(default=dict, null=True, blank=True)
 

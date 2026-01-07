@@ -63,15 +63,15 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 class RoleSerializer(serializers.ModelSerializer):
     # Nested permissions to see what a role can do
-    permissions = PermissionSerializer(many=True, read_only=True)
+    permissions = PermissionSerializer(read_only=True)
 
     class Meta:
         model = Role
         fields = ['id', 'name', 'description', 'permissions', 'metadata']
 
 class UserRoleSerializer(serializers.ModelSerializer):
-    user = UserListSerializer(read_only=True)
-    permissions = PermissionSerializer(many=True, read_only=True)
+    user = UserListSerializer
+    permissions = PermissionSerializer
     class Meta:
         model = UserRole
         fields = ['user', 'role']
@@ -83,11 +83,11 @@ class UserRoleSerializer(serializers.ModelSerializer):
         return data
 
 class RolePermissionSerializer(serializers.ModelSerializer):
+    role = RoleSerializer(read_only=True)
+    permission = PermissionSerializer(read_only=True)
     class Meta:
         model = RolePermission
         fields = ['role', 'permission']
-        role = RoleSerializer(read_only=True)
-        permission = PermissionSerializer(many=True, read_only=True)
 
     def validate(self, data):
         # Rule: Roles cannot have duplicate permissions
