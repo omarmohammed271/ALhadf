@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserStore } from "@/store/authStore";
 import { getUsers } from "@/api/authAPI";
 import { t } from "i18next";
+import { queryClient } from "@/lib/react-query";
 
 export default function UserManagement() {
   const [activeTab, setActiveTab] = useState("users");
@@ -63,7 +64,7 @@ export default function UserManagement() {
 
   // Mutation for creating alerts
   const mutation = useMutation({
-    mutationFn: (data: { title: string; description: string; level: string; metadata: any; user_ids: number[] }) =>
+    mutationFn: (data: { title: string; description: string; level: string; metadata: any; user_ids: any }) =>
       handleCreateAlert(data),
     onSuccess: () => {
       toast.success(`Alert sent successfully to ${selectedUser?.profile?.first_name || "all users"}`);
@@ -72,6 +73,9 @@ export default function UserManagement() {
       setDescription("");
       setLevel("info");
       setMetadata("");
+      queryClient.invalidateQueries(alerts)
+      console.log("yeah?");
+      
     },
     onError: (err: any) => {
       toast.error(
@@ -103,16 +107,17 @@ export default function UserManagement() {
       description,
       level,
       metadata: parsedMetadata,
-      user_ids: selectedUser ? [selectedUser.id] : allUsers.map((u: any) => u.id),
+      user_ids: selectedUser ? [selectedUser.id] : '',
     });
   };
+console.log(alerts);
 
   return (
     <div className="flex-1 overflow-auto p-4">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="my-5 mx-auto *:text-lg *:p-6 py-7">
-          <TabsTrigger value="users">Users & Notify</TabsTrigger>
-          <TabsTrigger value="notifications">My Notifications</TabsTrigger>
+          <TabsTrigger value="users">{t('users.title')}</TabsTrigger>
+          <TabsTrigger value="notifications">{t('alerts.notify')}</TabsTrigger>
         </TabsList>
 
         {/* USERS & NOTIFY TAB */}
@@ -157,8 +162,8 @@ export default function UserManagement() {
               <TableBody>
                 {allUsers.map((user: any) => (
                   <TableRow className="*:px-5 border-border" key={user.id}>
-                    <TableCell>{user.profile?.first_name ?? "-"}</TableCell>
-                    <TableCell>{user.profile?.last_name ?? "-"}</TableCell>
+                    <TableCell>{user.first_name ?? "-"}</TableCell>
+                    <TableCell>{user.last_name ?? "-"}</TableCell>
                     <TableCell>{user.username ?? "-"}</TableCell>
                     <TableCell>{user.email ?? "-"}</TableCell>
                     <TableCell>{user.profile?.phone_number ?? "-"}</TableCell>
@@ -260,6 +265,7 @@ export default function UserManagement() {
                 <TableRow className="*:p-3 border-border bg-secondary/10 hover:bg-secondary/5 rounded-2xl">
                   <TableHead>Title</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>To</TableHead>
                   <TableHead>Level</TableHead>
                   <TableHead>Created At</TableHead>
                   <TableHead>Is Read</TableHead>
@@ -270,6 +276,7 @@ export default function UserManagement() {
                   <TableRow className="*:px-5 border-border" key={alert.id}>
                     <TableCell>{alert.alert?.title ?? "-"}</TableCell>
                     <TableCell>{alert.alert?.description ?? "-"}</TableCell>
+                    <TableCell>{alert.user?.username ?? "-"}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         alert.alert?.level === 'critical' ? 'bg-red-100 text-red-800' :

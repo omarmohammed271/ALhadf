@@ -31,7 +31,8 @@ class AlertViewSet(viewsets.ModelViewSet):
         Create alert and assign to specified users or all users.
         Expects user_ids as list in request.data['user_ids[]'].
         """
-        user_ids = request.data.get('user_ids', request.data.get('user_ids[]', []))
+        data = request.data.copy()
+        user_ids = data.get('user_ids[]') or data.get('user_ids') 
         # Validate user_ids are integers
         try:
             user_ids = [int(uid) for uid in user_ids if uid]
@@ -40,7 +41,7 @@ class AlertViewSet(viewsets.ModelViewSet):
                 {'error': 'user_ids must be a list of integers'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -58,7 +59,7 @@ class AlertViewSet(viewsets.ModelViewSet):
                     )
             else:
                 users = User.objects.all()
-            
+            print(users)
             # Bulk create user alerts
             user_alerts = [
                 UserAlert(user=user, alert=alert)

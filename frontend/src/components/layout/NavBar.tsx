@@ -16,9 +16,12 @@ function NavBar(){
 
     const userData = useUserStore((state) => state.userData);
     useEffect(() => {
+        console.log(userData);
+        
         if (userData.isLogged != true) {
             navigate("/auth/login", { replace: true });
         }
+        
     }, [navigate]);
     
     return location.pathname.startsWith('/auth') ? <AuthNavBar /> : <BaseNavBar />

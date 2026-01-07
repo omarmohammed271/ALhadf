@@ -3,6 +3,8 @@ import { axiosInstance, axiosMutateInstance } from "./axiosInstance";
 
 // Create a new alert
 export const handleCreateAlert = async (data: any) => {
+  console.log(data);
+  
   return axiosMutateInstance.post(`api/alerts/alerts/`, data).then(res => res.data);
 };
 

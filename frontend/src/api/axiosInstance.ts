@@ -1,33 +1,29 @@
 // src/api/axiosInstance.js
-import { useUserStore } from '@/store/authStore';
 import axios from 'axios';
 
 
 export const baseURL = `127.0.0.1:8000`
 
+export const axiosInstance = axios.create({
+  baseURL: `http://${baseURL}/`,
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Token ${localStorage.getItem('user-token')}`
+  },
+});
 
-export const axiosInstance = () => {
+export const axiosAuthInstance = axios.create({
+  baseURL: `http://${baseURL}/`,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+    // 'Authorization': `Token ${localStorage.getItem('user-token')}`
+  },
+});
 
-  const userData = useUserStore(state => state.userData);
-
-  return (axios.create({
-    baseURL: `http://${baseURL}/`,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Token ${userData.token}`
-    },
-  }))
-};
-
-export const axiosMutateInstance = () => {
-
-  const userData = useUserStore(state => state.userData);
-
-  return (axios.create({
+export const axiosMutateInstance = axios.create({
     baseURL: `http://${baseURL}/`,
     headers: {
       'Content-Type': 'multipart/form-data',
-      'Authorization': `Token ${userData.token}`
+      'Authorization': `Token ${localStorage.getItem('user-token')}`
     },
-  }))
-};
+  });

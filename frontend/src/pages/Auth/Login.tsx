@@ -33,11 +33,12 @@ export default function Login(){
                 email: data.email,
                 token: data.token,
                 position: data.position,
-                role: "",
+                role: data.role,
                 first_name: data.first_name,
                 last_name: data.last_name,
                 isLogged: true,
             });
+            localStorage.setItem('user-token', data.token)
             navigate(`/dashboard`, { replace: true });
         },
         onError(error) {

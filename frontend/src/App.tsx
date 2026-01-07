@@ -10,17 +10,13 @@ import Login from './pages/Auth/Login'
 import { useEffect } from 'react'
 import UserManagement from './pages/UserManagement/UserManagement'
 import { Toaster } from 'react-hot-toast'
+import { useUserStore } from './store/authStore'
 
 function App() {
   const { i18n } = useTranslation();
 
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem("is-authenticated");
+  const userData = useUserStore(state => state.userData)
 
-    if (isAuthenticated != "true") {
-      window.history.replaceState({},"/auth/login");
-    }
-  }, []);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -37,19 +33,36 @@ function App() {
               <Route path="/auth/login" element={<Login />} />
 
               {/* Main routes */}
-              <Route path="/dashboard" element={<>
-                <div className='flex flex-col flex-1'>
-                  <Dashboard />
-                </div>
-                </>
-              } />
-              <Route path="/user-management" element={<UserManagement />} />
-              <Route path="/data-input" element={
-                <div className='flex flex-col flex-1'>
-                  <DataForm />
-                </div>
-              } />
-
+              {
+                userData.role[0].toLowerCase() != "viewer" ? (
+                  <>
+                  <Route path="/dashboard" element={<>
+                    <div className='flex flex-col flex-1'>
+                      <Dashboard />
+                    </div>
+                    </>
+                  } />
+                  <Route path="/data-input" element={
+                    <div className='flex flex-col flex-1'>
+                      <DataForm />
+                    </div>
+                  } />
+                  {
+                    userData.role[0].toLowerCase() == "superadmin" ? (
+                      <Route path="/user-management" element={<UserManagement />} />
+                    ) : null
+                  }
+                  </>
+                ) : (
+                  <Route path="/dashboard" element={<>
+                    <div className='flex flex-col flex-1'>
+                      <Dashboard />
+                    </div>
+                    </>
+                  } />
+                )
+              }
+            <Route path="/*" element={<Dashboard />} />
             </Routes>
             <Toaster
               position="top-right"
