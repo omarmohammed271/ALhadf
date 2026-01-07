@@ -34,7 +34,7 @@ function BaseNavBar(){
     const location = useLocation();
     
     return(
-        <div className="px-3 justify-between z-50 h-fit border-border backdrop-blur-md py-1 flex w-full min-[2000px]:py-[1px] items-center">
+        <div className="px-3 justify-between z-50 h-fit border-border backdrop-blur-md py-1 flex w-full min-[2000px]:py-px items-center">
 
             {/* Digiations Logo */}
             <Link to={'/'}>

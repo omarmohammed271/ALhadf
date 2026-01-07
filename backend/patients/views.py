@@ -73,7 +73,7 @@ class ContextDataViewSet(viewsets.ModelViewSet):
     #     return super().get_permissions()
 
 
-class ExperienceFailureIndicatorViewSet(viewsets.ReadOnlyModelViewSet):
+class ExperienceFailureIndicatorViewSet(viewsets.ModelViewSet):
     queryset = ExperienceFailureIndicator.objects.all()
     serializer_class = ExperienceFailureIndicatorSerializer
     authentication_classes = [TokenAuthentication]

@@ -3,7 +3,6 @@ import { axiosInstance, axiosMutateInstance } from "./axiosInstance";
 
 // Create a new alert
 export const handleCreateAlert = async (data: any) => {
-  console.log(data);
   
   return axiosMutateInstance.post(`api/alerts/alerts/`, data).then(res => res.data);
 };
@@ -46,7 +45,6 @@ export const getSatisfactionSignals = async () => {
 };
 
 export const createSatisfactionSignal = async (data: any) => {
-  console.log(data);
   
   const res = await axiosMutateInstance.post("api/patients/feedback/", data);
   return res.data;

@@ -12,7 +12,7 @@ import { useState } from 'react';
 export default function SatisfactionSignals({baseClasses}: {baseClasses: string}){
 
     
-  const [patientSatisfaction, setPatientSatisfaction] = useState<any>(
+    const [patientSatisfaction, setPatientSatisfaction] = useState<any>(
         {
         visit: "",
         overall_score: "",

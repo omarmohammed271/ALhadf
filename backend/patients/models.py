@@ -189,12 +189,12 @@ class ExperienceFailureIndicator(models.Model):
     ]
 
     indicator_id = models.BigAutoField(primary_key=True)
-    visit = models.OneToOneField(ERVisit, on_delete=models.CASCADE, related_name='failure_report')
-    comm_event = models.OneToOneField(CommunicationEvent, on_delete=models.SET_NULL, null=True, blank=True,
+    visit = models.name = models.ForeignKey(ERVisit, on_delete=models.CASCADE, related_name='failure_report')
+    comm_event = models.name = models.ForeignKey(CommunicationEvent, on_delete=models.SET_NULL, null=True, blank=True,
                                       related_name='failure_indicator')
     lwbs = models.BooleanField(default=False)
-    time_to_first_contact = models.DurationField(null=True, blank=True)
-    time_without_communication = models.DurationField(null=True, blank=True)
+    time_to_first_contact = models.DurationField(null=True, blank=True, editable=False)
+    time_without_communication = models.DurationField(null=True, blank=True, editable=False)
     revisit_reason = models.CharField(max_length=50, choices=Revisit, null=True, blank=True)
     metadata = models.JSONField(default=dict, null=True, blank=True)
 

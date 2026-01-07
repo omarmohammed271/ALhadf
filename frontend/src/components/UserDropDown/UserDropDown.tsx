@@ -12,6 +12,11 @@ const UserDropDown: React.FC = () => {
     const navigate = useNavigate();
 
     // Logout
+    const logout = () => {
+        setUserData({...userData, isLogged: false});
+        localStorage.setItem("user-token", "")
+        navigate('/auth/login', {replace: true})
+    }
     
     return (
         <DropdownMenu>
@@ -30,7 +35,7 @@ const UserDropDown: React.FC = () => {
                 <DropdownMenuItem onClick={() => navigate('/data-input', {replace: true})}><NotebookPen /> Data-Input</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/dashboard', {replace: true})}><LayoutDashboard /> Dashboard</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/user-management', {replace: true})}><Users /> Users</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {setUserData({...userData, isLogged: false}); navigate('/auth/login', {replace: true})}}><LogOut /> Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}><LogOut /> Logout</DropdownMenuItem>
                 {/* Add more menu items as needed */}
             </DropdownMenuContent>
         </DropdownMenu>

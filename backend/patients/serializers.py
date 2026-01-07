@@ -26,7 +26,7 @@ class CommunicationEventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CommunicationEvent
-        fields = '__all__' + 'visit_datail'
+        fields = '__all__'
 
 
 class SatisfactionSignalSerializer(serializers.ModelSerializer):
@@ -38,22 +38,48 @@ class SatisfactionSignalSerializer(serializers.ModelSerializer):
 
 
 class ContextDataSerializer(serializers.ModelSerializer):
-    visit = serializers.PrimaryKeyRelatedField(queryset=ERVisit.objects.all(), write_only=True)
-    visit_detail = ERVisitSerializer(source="visit", read_only=True)
     class Meta:
         model = ContextData
-        fields = '__all__' + 'visit_datail'
+        fields = '__all__'
 
 
 class ExperienceFailureIndicatorSerializer(serializers.ModelSerializer):
-    time_to_first_contact = serializers.DurationField(read_only=True)
-    time_without_communication = serializers.DurationField(read_only=True)
-    visit = serializers.PrimaryKeyRelatedField(queryset=ERVisit.objects.all(), write_only=True)
-    visit_detail = ERVisitSerializer(source="visit", read_only=True)
-    comm_event = serializers.PrimaryKeyRelatedField(queryset=ContextData.objects.all())
-    comm_event_detail = CommunicationEventSerializer()
-    
+    visit = serializers.PrimaryKeyRelatedField(
+        queryset=ERVisit.objects.all(),
+        write_only=True
+    )
+    visit_detail = ERVisitSerializer(
+        source="visit",
+        read_only=True
+    )
+
+    comm_event = serializers.PrimaryKeyRelatedField(
+        queryset=CommunicationEvent.objects.all(),
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    comm_event_detail = CommunicationEventSerializer(
+        source="comm_event",
+        read_only=True
+    )
 
     class Meta:
         model = ExperienceFailureIndicator
-        fields = '__all__' + 'visit_datail' + 'comm_event_detail'
+        fields = [
+            'indicator_id',
+            'visit',
+            'visit_detail',
+            'comm_event',
+            'comm_event_detail',
+            'lwbs',
+            'time_to_first_contact',
+            'time_without_communication',
+            'revisit_reason',
+            'metadata',
+        ]
+        
+    def create(self, validated_data):
+        print(validated_data)
+        return super().create(validated_data)
+
