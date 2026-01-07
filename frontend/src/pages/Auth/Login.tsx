@@ -40,7 +40,9 @@ export default function Login(){
             });
             navigate(`/dashboard`, { replace: true });
         },
-        onError() {
+        onError(error) {
+            console.log(error);
+            
             toast.error("Could not log in.")
         },
     })

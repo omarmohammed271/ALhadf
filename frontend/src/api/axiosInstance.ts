@@ -10,24 +10,24 @@ export const axiosInstance = () => {
 
   const userData = useUserStore(state => state.userData);
 
-  return axios.create({
+  return (axios.create({
     baseURL: `http://${baseURL}/`,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Token ${userData.token}`
     },
-  })
+  }))
 };
 
 export const axiosMutateInstance = () => {
 
   const userData = useUserStore(state => state.userData);
 
-  return axios.create({
-  baseURL: `http://${baseURL}/`,
-  headers: {
-    'Content-Type': 'multipart/form-data',
-    'Authorization': `Token ${userData.token}`
-  },
-})
+  return (axios.create({
+    baseURL: `http://${baseURL}/`,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `Token ${userData.token}`
+    },
+  }))
 };
