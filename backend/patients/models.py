@@ -56,13 +56,13 @@ class ERVisit(models.Model):
             models.Index(fields=['disposition_type']),
         ]
 
-    def clean(self):
-        if self.arrival_ts and self.disposition_ts:
-            if self.disposition_ts < self.arrival_ts:
-                raise ValidationError("Disposition cannot be before arrival.")
+    # def clean(self):
+    #     if self.arrival_ts and self.disposition_ts:
+    #         if self.disposition_ts < self.arrival_ts:
+    #             raise ValidationError("Disposition cannot be before arrival.")
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        # self.full_clean()
         if self.arrival_ts and self.disposition_ts:
             # if self.disposition_ts >= self.arrival_ts:
             self.length_of_stay = self.disposition_ts - self.arrival_ts

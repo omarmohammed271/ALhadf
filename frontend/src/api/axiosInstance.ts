@@ -24,6 +24,6 @@ export const axiosMutateInstance = axios.create({
     baseURL: `http://${baseURL}/`,
     headers: {
       'Content-Type': 'multipart/form-data',
-      'Authorization': `Token ${localStorage.getItem('user-token')}`
+      // 'Authorization': `Token ${localStorage.getItem('user-token')}`
     },
   });

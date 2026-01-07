@@ -5,6 +5,8 @@ class HasERPermission(permissions.BasePermission):
     def has_permission(self, request, view):
 
         user_perms = request.user.user_extension.get_custom_permissions()
+        print(user_perms)
+        
         # 1. Superusers (Django Admin users) always pass
         if request.user.is_superuser:
             return True

@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { createERVisit, createSatisfactionSignal } from "@/api/serviceAPI";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createERVisit, createSatisfactionSignal, getCommunicationEvents, getERVisits, getFailureIndicators, getSatisfactionSignals } from "@/api/serviceAPI";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { getUsers } from "@/api/authAPI";
 
 export default function DataForm() {
   const { t } = useTranslation();
@@ -74,6 +75,20 @@ export default function DataForm() {
     }
   )
 
+  function toISO(value: string) {
+    if (!value) return null;
+    return new Date(value).toISOString();
+  }
+
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+    queryKey: ["all_users"],
+    queryFn: getUsers,
+  });
+
+  const { data: ervisits = [], isPending: visitsPending } = useQuery({
+    queryKey: ["all_visits"],
+    queryFn: getERVisits,
+  });
   const {mutate: erVisitMutation, isPending: erVisitPending} = useMutation({
     mutationFn: (data: typeof erVisit) => createERVisit(data),
     onSuccess(data, variables, onMutateResult, context) {
@@ -84,6 +99,10 @@ export default function DataForm() {
     },
   });
 
+  const { data: satisfactionSignals = [], isPending: signalsPending } = useQuery({
+    queryKey: ["all_signals"],
+    queryFn: getSatisfactionSignals,
+  });
   const {mutate: patientSatisfactionMutation, isPending: patientSatisfactionPending} = useMutation({
     mutationFn: (data: typeof patientSatisfaction) => createSatisfactionSignal(data),
     onSuccess(data, variables, onMutateResult, context) {
@@ -95,6 +114,10 @@ export default function DataForm() {
     },
   });
 
+  const { data: commEvents = [], isPending: commEventsPending } = useQuery({
+    queryKey: ["comm_events"],
+    queryFn: getCommunicationEvents,
+  });
   const {mutate: communicationEventMutation, isPending: communicationEventPending} = useMutation({
     mutationFn: (data: typeof communicationEvent) => createSatisfactionSignal(data),
     onSuccess(data, variables, onMutateResult, context) {
@@ -106,6 +129,12 @@ export default function DataForm() {
     },
   });
 
+
+
+  const { data: failures = [], isPending: failurePending } = useQuery({
+    queryKey: ["failures"],
+    queryFn: getFailureIndicators,
+  });
   const {mutate: failureDataMutation, isPending: failureDataPending} = useMutation({
     mutationFn: (data: typeof failureData) => createSatisfactionSignal(data),
     onSuccess(data, variables, onMutateResult, context) {
@@ -146,13 +175,23 @@ export default function DataForm() {
               label={t("dataForm.fields.patient.label")}
               description={t("dataForm.fields.patient.description")}
             >
-              <Input
-                placeholder="Patient ID / MRN"
+              <Select
                 value={erVisit.patient}
-                onChange={(e) =>
-                  setErVisit({ ...erVisit, patient: e.target.value })
+                onValueChange={(value) =>
+                  setErVisit({ ...erVisit, patient: value })
                 }
-              />
+              >
+                <SelectTrigger className={baseClasses}>
+                  <SelectValue placeholder="Patient ID / MRN" />
+                </SelectTrigger>
+                <SelectContent className={baseClasses}>
+                  {allUsers.map((user: any) => (
+                    <SelectItem key={user} value={user.id}>
+                      {user.username}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
 
             {/* Arrival Timestamp */}
@@ -161,10 +200,10 @@ export default function DataForm() {
               description={t("dataForm.fields.arrivalTimestamp.description")}
             >
               <Input
-                type="datetime-local"
+                type="date"
                 value={erVisit.arrival_ts}
                 onChange={(e) =>
-                  setErVisit({ ...erVisit, arrival_ts: e.target.value })
+                  setErVisit({ ...erVisit, arrival_ts: e.target.value})
                 }
               />
             </Field>
@@ -175,7 +214,7 @@ export default function DataForm() {
               description={t("dataForm.fields.triageTimestamp.description")}
             >
               <Input
-                type="datetime-local"
+                type="date"
                 value={erVisit.triage_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, triage_ts: e.target.value })
@@ -189,7 +228,7 @@ export default function DataForm() {
               description={t("dataForm.fields.firstClinicalContact.description")}
             >
               <Input
-                type="datetime-local"
+                type="date"
                 value={erVisit.first_contact_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, first_contact_ts: e.target.value })
@@ -203,7 +242,7 @@ export default function DataForm() {
               description={t("dataForm.fields.dispositionTimestamp.description")}
             >
               <Input
-                type="datetime-local"
+                type="date"
                 value={erVisit.disposition_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, disposition_ts: e.target.value })
