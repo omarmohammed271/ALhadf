@@ -21,13 +21,14 @@ import { createERVisit, createSatisfactionSignal, getCommunicationEvents, getERV
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { getUsers } from "@/api/authAPI";
+import { formatDateTime } from "@/utils/dateHelpers";
 
 export default function DataForm() {
   const { t } = useTranslation();
 
   const baseClasses = " bg-background border-border "
 
-  const [erVisit, setErVisit] = useState({
+  const [erVisit, setErVisit] = useState<any>({
     patient: "",
     arrival_ts: "",
     triage_ts: "",
@@ -41,7 +42,7 @@ export default function DataForm() {
     metadata: "null",
   });
 
-  const [patientSatisfaction, setPatientSatisfaction] = useState(
+  const [patientSatisfaction, setPatientSatisfaction] = useState<any>(
     {
       visit: "",
       overall_score: "",
@@ -53,7 +54,7 @@ export default function DataForm() {
     }
   )
 
-  const [communicationEvent, setCommunicationEvent] = useState(
+  const [communicationEvent, setCommunicationEvent] = useState<any>(
     {
       event_type: "",
       staff_role: "",
@@ -63,7 +64,7 @@ export default function DataForm() {
     }
   )
 
-  const [failureData, setFailureData] = useState(
+  const [failureData, setFailureData] = useState<any>(
     {
       visit: "",
       communicationEvent: "",
@@ -186,7 +187,7 @@ export default function DataForm() {
                 </SelectTrigger>
                 <SelectContent className={baseClasses}>
                   {allUsers.map((user: any) => (
-                    <SelectItem key={user} value={user.id}>
+                    <SelectItem key={user.id} value={user.id}>
                       {user.username}
                     </SelectItem>
                   ))}
@@ -200,7 +201,7 @@ export default function DataForm() {
               description={t("dataForm.fields.arrivalTimestamp.description")}
             >
               <Input
-                type="date"
+                type="datetime-local"
                 value={erVisit.arrival_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, arrival_ts: e.target.value})
@@ -214,7 +215,7 @@ export default function DataForm() {
               description={t("dataForm.fields.triageTimestamp.description")}
             >
               <Input
-                type="date"
+                type="datetime-local"
                 value={erVisit.triage_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, triage_ts: e.target.value })
@@ -228,7 +229,7 @@ export default function DataForm() {
               description={t("dataForm.fields.firstClinicalContact.description")}
             >
               <Input
-                type="date"
+                type="datetime-local"
                 value={erVisit.first_contact_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, first_contact_ts: e.target.value })
@@ -242,7 +243,7 @@ export default function DataForm() {
               description={t("dataForm.fields.dispositionTimestamp.description")}
             >
               <Input
-                type="date"
+                type="datetime-local"
                 value={erVisit.disposition_ts}
                 onChange={(e) =>
                   setErVisit({ ...erVisit, disposition_ts: e.target.value })
@@ -378,7 +379,15 @@ export default function DataForm() {
             <div>
               <Button
                 className=""
-                onClick={() => erVisitMutation(erVisit)}
+                onClick={() =>
+                  erVisitMutation({
+                    ...erVisit,
+                    arrival_ts: toISO(erVisit.arrival_ts),
+                    triage_ts: toISO(erVisit.triage_ts),
+                    first_contact_ts: toISO(erVisit.first_contact_ts),
+                    disposition_ts: toISO(erVisit.disposition_ts),
+                  })
+                }
                 disabled={erVisitPending}
               >
                 Save
@@ -409,13 +418,22 @@ export default function DataForm() {
               label={t("dataForm.fields.visit.label")}
               description={t("dataForm.fields.visit.description")}
             >
-              <Input placeholder="ER Visit ID"
-                value={patientSatisfaction.visit}
-                onChange={(e) =>
-                  setPatientSatisfaction({ ...patientSatisfaction, visit: e.target.value })
-                }
-              />
+              <Select onValueChange={(value) =>
+                  setPatientSatisfaction({ ...patientSatisfaction, visit: value })
+                }>
+                <SelectTrigger className={baseClasses}>
+                  <SelectValue placeholder="ER Visit ID" />
+                </SelectTrigger>
+                <SelectContent className={baseClasses}>
+                  {ervisits.map((visit: any) => (
+                    <SelectItem key={visit.visit_id} value={String(visit.visit_id)}>
+                      {visit.patient_detail.username} - {formatDateTime(visit.arrival_ts)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
+
 
             {/* Satisfaction Scores */}
             {[
@@ -484,7 +502,10 @@ export default function DataForm() {
             <div>
               <Button
                 className=""
-                onClick={() => patientSatisfactionMutation(patientSatisfaction)}
+                onClick={() => patientSatisfactionMutation({
+                  ...patientSatisfaction,
+
+                })}
                 disabled={patientSatisfactionPending}
               >
                 Save
@@ -514,7 +535,20 @@ export default function DataForm() {
               label={t("dataForm.fields.visit.label")}
               description={t("dataForm.fields.visit.description")}
             >
-              <Input placeholder="ER Visit ID" value={communicationEvent.visit} onChange={(e) => setCommunicationEvent({...communicationEvent, visit: e.target.value})} />
+              <Select onValueChange={(value) =>
+                  setCommunicationEvent({ ...communicationEvent, visit: value })
+                }>
+                <SelectTrigger className={baseClasses}>
+                  <SelectValue placeholder="ER Visit ID" />
+                </SelectTrigger>
+                <SelectContent className={baseClasses}>
+                  {ervisits.map((visit: any) => (
+                    <SelectItem key={visit.visit_id} value={String(visit.visit_id)}>
+                      {visit.patient_detail.username} - {formatDateTime(visit.arrival_ts)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
 
             {/* Event Type */}
@@ -631,7 +665,20 @@ export default function DataForm() {
               label={t("dataForm.fields.visit.label")}
               description={t("dataForm.fields.visit.description")}
             >
-              <Input placeholder="ER Visit ID" value={failureData.visit} onChange={(e) => setFailureData({...failureData, visit: e.target.value})} />
+              <Select onValueChange={(value) =>
+                  setFailureData({ ...failureData, visit: value })
+                }>
+                <SelectTrigger className={baseClasses}>
+                  <SelectValue placeholder="ER Visit ID" />
+                </SelectTrigger>
+                <SelectContent className={baseClasses}>
+                  {ervisits.map((visit: any) => (
+                    <SelectItem key={visit.visit_id} value={String(visit.visit_id)}>
+                      {visit.patient_detail.username} - {formatDateTime(visit.arrival_ts)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
 
             {/* Communication Event Reference (optional) */}

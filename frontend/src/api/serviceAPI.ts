@@ -46,6 +46,8 @@ export const getSatisfactionSignals = async () => {
 };
 
 export const createSatisfactionSignal = async (data: any) => {
+  console.log(data);
+  
   const res = await axiosMutateInstance.post("api/patients/feedback/", data);
   return res.data;
 };

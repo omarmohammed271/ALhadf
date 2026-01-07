@@ -71,6 +71,9 @@ class ERVisit(models.Model):
             self.length_of_stay = timedelta(0)
 
         super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f'{self.patient}-{self.arrival_ts} ({self.visit_id})'
 
 
 class CommunicationEvent(models.Model):
@@ -105,6 +108,9 @@ class CommunicationEvent(models.Model):
             models.Index(fields=['visit', 'event_ts']),
             models.Index(fields=['event_type']),
         ]
+        
+    def __str__(self):
+        return f'{self.initiated_by}-{self.event_type} ({self.event_id})'
 
 
 class SatisfactionSignal(models.Model):
@@ -127,6 +133,9 @@ class SatisfactionSignal(models.Model):
         indexes = [
             models.Index(fields=['overall_score', 'waiting_score']),
         ]
+        
+    def __str__(self):
+        return f'{self.initiated_by}-{self.event_type} ({self.feedback_id})'
 
 
 class ContextData(models.Model):
@@ -167,6 +176,9 @@ class ContextData(models.Model):
         indexes = [
             models.Index(fields=['date', 'er_section']),
         ]
+        
+    def __str__(self):
+        return f'{self.shift}-{self.date} ({self.context_id})'
 
 
 class ExperienceFailureIndicator(models.Model):
@@ -200,3 +212,6 @@ class ExperienceFailureIndicator(models.Model):
                 self.time_without_communication = self.comm_event.event_ts - self.visit.arrival_ts
 
         super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f'Time to first contact:{self.time_to_first_contact} ({self.indicator_id})'

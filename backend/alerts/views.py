@@ -59,7 +59,6 @@ class AlertViewSet(viewsets.ModelViewSet):
                     )
             else:
                 users = User.objects.all()
-            print(users)
             # Bulk create user alerts
             user_alerts = [
                 UserAlert(user=user, alert=alert)

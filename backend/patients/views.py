@@ -16,7 +16,7 @@ from .serializers import (
 class ERVisitViewSet(viewsets.ModelViewSet):
     queryset = ERVisit.objects.all().order_by('-arrival_ts')
     serializer_class = ERVisitSerializer
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     # permission_classes = [HasERPermission]
 
     # def get_permissions(self):
@@ -26,9 +26,6 @@ class ERVisitViewSet(viewsets.ModelViewSet):
     #         # Viewers and Admins can see the list
     #         self.required_permission = 'view'
     #     return super().get_permissions()
-    def create(self, request):
-        print(request.data)
-        super().create(request)
 
 
 class CommunicationEventViewSet(viewsets.ModelViewSet):
