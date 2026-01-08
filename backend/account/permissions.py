@@ -4,8 +4,6 @@ from rest_framework import permissions
 class HasERPermission(permissions.BasePermission):
     def has_permission(self, request, view):
 
-        user_perms = request.user.user_extension.get_custom_permissions()
-        print(user_perms)
         
         # 1. Superusers (Django Admin users) always pass
         if request.user.is_superuser:
@@ -18,6 +16,7 @@ class HasERPermission(permissions.BasePermission):
 
         # 3. Check if the user's roles actually contain this permission
         # This calls the method you wrote in UserExtension
+        user_perms = request.user.user_extension.get_custom_permissions()
 
 
         return required_perm in user_perms

@@ -15,6 +15,7 @@ function NavBar(){
     const location = useLocation();
 
     const userData = useUserStore((state) => state.userData);
+    
     useEffect(() => {
         
         if (userData.isLogged != true) {

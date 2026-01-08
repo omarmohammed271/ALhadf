@@ -56,7 +56,7 @@ export default function SatisfactionSignals({baseClasses}: {baseClasses: string}
                 </SelectTrigger>
                 <SelectContent className={baseClasses}>
                   {erVisits.map((visit: any) => (
-                    <SelectItem key={visit.visit_id} value={String(visit.visit_id)}>
+                    <SelectItem key={visit.id} value={String(visit.id)}>
                       {visit.patient_detail.username} - {formatDateTime(visit.arrival_ts)}
                     </SelectItem>
                   ))}

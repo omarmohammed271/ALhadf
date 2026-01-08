@@ -31,6 +31,7 @@ class AlertViewSet(viewsets.ModelViewSet):
         Create alert and assign to specified users or all users.
         Expects user_ids as list in request.data['user_ids[]'].
         """
+        
         data = request.data.copy()
         user_ids = data.get('user_ids[]') or data.get('user_ids') 
         # Validate user_ids are integers
@@ -82,7 +83,8 @@ class AlertViewSet(viewsets.ModelViewSet):
 
 class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserAlertSerializer
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -90,7 +92,7 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
         """
         return UserAlert.objects.all().select_related('alert').order_by('-alert__triggered_at')
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path="toggle-read")
     def toggle_read(self, request, pk=None):
         """
         Toggle read status of user's own alert.
@@ -110,7 +112,7 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
         
         return Response(self.get_serializer(user_alert).data)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], url_path="unread-count")
     def unread_count(self, request):
         """
         Get count of unread alerts for current user.

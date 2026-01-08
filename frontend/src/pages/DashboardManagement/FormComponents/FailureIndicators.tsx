@@ -23,7 +23,7 @@ export default function FailureIndicators({baseClasses}: {baseClasses: string}){
     comm_event: "",            // CommunicationEvent ID (optional)
     lwbs: "",
     revisit_reason: "",
-    metadata: "",              // JSON object
+    metadata: "null",              // JSON object
   });
   
   const {
@@ -31,7 +31,6 @@ export default function FailureIndicators({baseClasses}: {baseClasses: string}){
     isPending: failureDataPending,
   } = useCreateFailureIndicator();
     
-
   const { data: erVisits = [], isPending: visitsPending } = useERVisits();
 
   return(
@@ -60,7 +59,7 @@ export default function FailureIndicators({baseClasses}: {baseClasses: string}){
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {erVisits.map((visit: any) => (
-                <SelectItem key={visit.visit_id} value={String(visit.visit_id)}>
+                <SelectItem key={visit.id} value={String(visit.id)}>
                   {visit.patient_detail.username} - {formatDateTime(visit.arrival_ts)}
                 </SelectItem>
               ))}
@@ -81,7 +80,7 @@ export default function FailureIndicators({baseClasses}: {baseClasses: string}){
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {commEvents.map((event: any) => (
-                <SelectItem key={event.event_id} value={String(event.event_id)}>
+                <SelectItem key={event.id} value={String(event.id)}>
                   {event.staff_role} - {formatDateTime(event.event_ts)}
                 </SelectItem>
               ))}

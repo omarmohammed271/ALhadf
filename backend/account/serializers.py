@@ -54,7 +54,7 @@ class UserListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile']
+        fields = ['id', 'username', 'email', 'profile', 'first_name', 'last_name']
 
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:

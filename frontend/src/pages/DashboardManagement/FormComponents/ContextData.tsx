@@ -21,6 +21,8 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
     metadata: "null",
   });
 
+  console.log(contextData);
+  
   const { data: existingContext = [], isPending: contextPending } = useContextData();
   const { mutate: createContextMutation, isPending: createPending } = useCreateContextData();
 
@@ -128,7 +130,7 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
           description={t("dataForm.fields.date.description")}
         >
           <Input
-            type="datetime-local"
+            type="date"
             value={contextData.date}
             onChange={(e) => setContextData({ ...contextData, date: e.target.value })}
           />

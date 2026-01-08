@@ -72,7 +72,7 @@ class ERVisit(models.Model):
         super().save(*args, **kwargs)
         
     def __str__(self):
-        return f'{self.patient}-{self.arrival_ts} ({self.visit_id})'
+        return f'{self.patient}-{self.arrival_ts} ({self.id})'
 
 
 class CommunicationEvent(models.Model):
@@ -108,7 +108,7 @@ class CommunicationEvent(models.Model):
         ]
         
     def __str__(self):
-        return f'{self.initiated_by}-{self.event_type} ({self.event_id})'
+        return f'{self.initiated_by}-{self.event_type} ({self.id})'
 
 
 class SatisfactionSignal(models.Model):
@@ -132,7 +132,7 @@ class SatisfactionSignal(models.Model):
         ]
         
     def __str__(self):
-        return f'{self.initiated_by}-{self.event_type} ({self.feedback_id})'
+        return f'{self.initiated_by}-{self.event_type} ({self.id})'
 
 
 class ContextData(models.Model):
@@ -174,7 +174,7 @@ class ContextData(models.Model):
         ]
         
     def __str__(self):
-        return f'{self.shift}-{self.date} ({self.context_id})'
+        return f'{self.shift}-{self.date} ({self.id})'
 
 
 class ExperienceFailureIndicator(models.Model):

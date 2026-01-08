@@ -32,57 +32,57 @@ class CommunicationEventViewSet(viewsets.ModelViewSet):
     queryset = CommunicationEvent.objects.all()
     serializer_class = CommunicationEventSerializer
     authentication_classes = [TokenAuthentication]
-    # permission_classes = [HasERPermission]
+    permission_classes = [HasERPermission]
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         self.required_permission = 'add_input'
-    #     else:
-    #         # Viewers and Admins can see the list
-    #         self.required_permission = 'view'
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class SatisfactionSignalViewSet(viewsets.ModelViewSet):
     queryset = SatisfactionSignal.objects.all()
     serializer_class = SatisfactionSignalSerializer
     authentication_classes = [TokenAuthentication]
-    # permission_classes = [HasERPermission]
+    permission_classes = [HasERPermission]
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         self.required_permission = 'add_input'
-    #     else:
-    #         # Viewers and Admins can see the list
-    #         self.required_permission = 'view'
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class ContextDataViewSet(viewsets.ModelViewSet):
     queryset = ContextData.objects.all()
     serializer_class = ContextDataSerializer
     authentication_classes = [TokenAuthentication]
-    # permission_classes = [HasERPermission]
+    permission_classes = [HasERPermission]
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         self.required_permission = 'add_input'
-    #     else:
-    #         # Viewers and Admins can see the list
-    #         self.required_permission = 'view'
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class ExperienceFailureIndicatorViewSet(viewsets.ModelViewSet):
     queryset = ExperienceFailureIndicator.objects.all()
     serializer_class = ExperienceFailureIndicatorSerializer
     authentication_classes = [TokenAuthentication]
-    # permission_classes = [HasERPermission]
+    permission_classes = [HasERPermission]
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         self.required_permission = 'add_input'
-    #     else:
-    #         # Viewers and Admins can see the list
-    #         self.required_permission = 'view'
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()

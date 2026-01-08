@@ -33,13 +33,15 @@ import { toast } from "react-hot-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserStore } from "@/store/authStore";
 import { getUsers } from "@/api/authAPI";
-import { t } from "i18next";
 import { queryClient } from "@/lib/react-query";
+import { useTranslation } from "react-i18next";
 
 export default function UserManagement() {
   const [activeTab, setActiveTab] = useState("users");
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  const {t} = useTranslation();
 
   // Alert form state
   const [title, setTitle] = useState("");
@@ -281,20 +283,20 @@ export default function UserManagement() {
   
 
   return (
-    <div className="flex-1 overflow-auto p-4">
+    <div className="flex-1 overflow-auto p-4 md:px-20">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="my-5 mx-auto *:text-lg *:p-6 py-7">
-          <TabsTrigger value="users">{t('users.title')}</TabsTrigger>
-          <TabsTrigger value="notifications">{t('alerts.notify')}</TabsTrigger>
+          <TabsTrigger value="users">{t('dataForm.users.title')}</TabsTrigger>
+          <TabsTrigger value="notifications">{t('dataForm.alerts.notify')}</TabsTrigger>
         </TabsList>
 
         {/* USERS & NOTIFY TAB */}
         <TabsContent value="users">
           <div className="flex justify-between">
             <div>
-              <h1 className="text-4xl font-bold my-5">{t("users.title")}</h1>
+              <h1 className="text-4xl font-bold my-5">{t("dataForm.users.title")}</h1>
               <h2 className="text-xl my-5 text-muted-foreground">
-                {t('users.subtitle')}
+                {t('dataForm.users.subtitle')}
               </h2>
             </div>
             <div className="flex items-end py-5">
@@ -420,9 +422,9 @@ export default function UserManagement() {
         {/* NOTIFICATIONS TAB */}
         <TabsContent value="notifications">
           <div>
-            <h1 className="text-4xl font-bold my-5">{t('alerts.notify')}</h1>
+            <h1 className="text-4xl font-bold my-5">{t('dataForm.alerts.notify')}</h1>
             <h2 className="text-xl my-5 text-muted-foreground">
-              {t('alerts.notify_all')}
+              {t('dataForm.alerts.notify_all')}
             </h2>
           </div>
 
