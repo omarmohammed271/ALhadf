@@ -3,6 +3,7 @@ import ERVisit from "./FormComponents/ERVisit";
 import SatisfactionSignals from "./FormComponents/SatisfactionSignals";
 import CommunicationSignals from "./FormComponents/CommunicationSignals";
 import FailureIndicators from "./FormComponents/FailureIndicators";
+import ContextForm from "./FormComponents/ContextData";
 
 export default function DataForm() {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ export default function DataForm() {
         <SatisfactionSignals baseClasses={baseClasses} />
 
         {/* ================================================= */}
-        {/* 3. Communication SIGNALS */}
+        {/* 3. COMMUNICATION SIGNALS */}
         {/* ================================================= */}
         <CommunicationSignals baseClasses={baseClasses} />
 
@@ -32,6 +33,11 @@ export default function DataForm() {
         {/* 4. EXPERIENCE FAILURE INDICATORS */}
         {/* ================================================= */}
         <FailureIndicators baseClasses={baseClasses} />
+
+        {/* ================================================= */}
+        {/* 5. CONTEXT DATA */}
+        {/* ================================================= */}
+        <ContextForm baseClasses={baseClasses} />
 
       </div>
     </div>

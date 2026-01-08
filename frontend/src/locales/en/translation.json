@@ -106,6 +106,10 @@
         "title": "Communication Signals",
         "description": "Recorded communication events between staff and patient."
       },
+      "erContext": {
+        "title": "ER Context Data",
+        "description": "Fill in the current ER shift, staffing, capacity, and section details."
+      },
       "experienceFailures": {
         "title": "Experience Failure Indicators",
         "description": "System-derived indicators highlighting breakdowns in patient experience."
@@ -221,15 +225,36 @@
         "placeholder": "Select revisit reason"
       },
 
-      "metadata": {
-        "label": "Metadata",
-        "description": "Additional structured context stored as JSON."
-      },
-
       "readOnly": {
         "timeToFirstContact": "Time to First Contact",
         "timeWithoutCommunication": "Time Without Communication"
+      },
+
+      "shift": {
+        "label": "Shift",
+        "description": "Select the current ER shift.",
+        "placeholder": "Select shift"
+      },
+      "staffingLevel": {
+        "label": "Staffing Level",
+        "description": "Select the current staffing level for the ER.",
+        "placeholder": "Select staffing level"
+      },
+      "capacityLevel": {
+        "label": "ER Capacity Level",
+        "description": "Select the current ER capacity level.",
+        "placeholder": "Select capacity level"
+      },
+      "date": {
+        "label": "Date",
+        "description": "Select the date for this ER context."
+      },
+      "metadata": {
+        "label": "Metadata",
+        "description": "Optional metadata in JSON format.",
+        "placeholder": "{\"source\": \"manual\", \"notes\": \"\"}"
       }
+    }
     },
 
     "options": {
@@ -292,44 +317,43 @@
         "newIssue": "New Unrelated Issue",
         "planned": "Planned Follow-up"
       }
-    }
   },
-    "tabs": {
-      "users": "Users & Notify",
-      "notifications": "My Notifications"
-    },
-    "users": {
-      "title": "Users in the system",
-      "subtitle": "View users and send alerts",
-      "first_name": "First Name",
-      "last_name": "Last Name",
-      "username": "Username",
-      "email": "Email",
-      "phone": "Phone"
-    },
-    "alerts": {
-      "notify": "All Notifications",
-      "notify_all": "Here, you can view all the notifications in the system.",
-      "sent": "Alert sent to {{user}}",
-      "failed": "Failed to send alert",
-      "invalid_metadata": "Metadata must be valid JSON",
-      "dialog_title": "Notify {{user}}",
-      "title": "Alert title",
-      "description": "Alert description",
-      "metadata": "Metadata (JSON)",
-      "info": "Info",
-      "warning": "Warning",
-      "critical": "Critical",
-      "all_users": "All Users",
-      "none": "No alerts found"
-    },
-    "common": {
-      "send": "Send",
-      "sending": "Sending...",
-      "cancel": "Cancel",
-      "yes": "Yes",
-      "no": "No"
-    }
+  "tabs": {
+    "users": "Users & Notify",
+    "notifications": "My Notifications"
+  },
+  "users": {
+    "title": "Users in the system",
+    "subtitle": "View users and send alerts",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "alerts": {
+    "notify": "All Notifications",
+    "notify_all": "Here, you can view all the notifications in the system.",
+    "sent": "Alert sent to {{user}}",
+    "failed": "Failed to send alert",
+    "invalid_metadata": "Metadata must be valid JSON",
+    "dialog_title": "Notify {{user}}",
+    "title": "Alert title",
+    "description": "Alert description",
+    "metadata": "Metadata (JSON)",
+    "info": "Info",
+    "warning": "Warning",
+    "critical": "Critical",
+    "all_users": "All Users",
+    "none": "No alerts found"
+  },
+  "common": {
+    "send": "Send",
+    "sending": "Sending...",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
+  }
   
 }
   
