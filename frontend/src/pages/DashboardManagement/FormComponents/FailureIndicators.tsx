@@ -45,7 +45,7 @@ export default function FailureIndicators({baseClasses}: {baseClasses: string}){
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
+      <CardContent className="xl:grid grid-cols-2 gap-6 overflow-hidden">
 
         {/* ER Visit Reference */}
         <Field

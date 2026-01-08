@@ -2,12 +2,16 @@ import { useContextData, useCreateContextData } from '@/api/endpoints/ContextDat
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field } from '@/components/ui/FormFields';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ContextForm({ baseClasses }: { baseClasses: string }) {
+
+  const {t} = useTranslation();
+
   const [contextData, setContextData] = useState<any>({
     shift: "day",
     staffing_level: "medium",
@@ -31,7 +35,7 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-2">
+      <CardContent className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
 
         {/* Shift */}
         <Field
@@ -44,9 +48,9 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {[
-                { value: "day", label: "Day (07:00 - 15:00)" },
-                { value: "evening", label: "Evening (15:00 - 23:00)" },
-                { value: "night", label: "Night (23:00 - 07:00)" },
+                { value: "day", label: t("dataForm.fields.shift.choices.day") },
+                { value: "evening", label: t("dataForm.fields.shift.choices.evening") },
+                { value: "night", label: t("dataForm.fields.shift.choices.night") },
               ].map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -65,9 +69,9 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {[
-                { value: "low", label: "Low Staffing" },
-                { value: "medium", label: "Normal Staffing" },
-                { value: "high", label: "Full Staffing" },
+                { value: "low", label: t("dataForm.fields.staffingLevel.choices.low") },
+                { value: "medium", label: t("dataForm.fields.staffingLevel.choices.medium") },
+                { value: "high", label: t("dataForm.fields.staffingLevel.choices.high") },
               ].map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -86,9 +90,9 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {[
-                { value: "under", label: "Under Capacity" },
-                { value: "at", label: "At Capacity" },
-                { value: "over", label: "Over Capacity" },
+                { value: "under", label: t("dataForm.fields.capacityLevel.choices.under") },
+                { value: "at", label: t("dataForm.fields.capacityLevel.choices.at") },
+                { value: "over", label: t("dataForm.fields.capacityLevel.choices.over") },
               ].map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -107,10 +111,10 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
             </SelectTrigger>
             <SelectContent className={baseClasses}>
               {[
-                { value: "main", label: "Main ER" },
-                { value: "fasttrack", label: "Fast Track" },
-                { value: "trauma", label: "Trauma Bay" },
-                { value: "peds", label: "Pediatrics" },
+                { value: "main", label: t("dataForm.options.main.resus") },
+                { value: "fasttrack", label: t("dataForm.options.fastTrack.resus") },
+                { value: "trauma", label: t("dataForm.options.trauma.resus") },
+                { value: "peds", label: t("dataForm.options.peds.resus") },
               ].map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -123,9 +127,8 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
           label={t("dataForm.fields.date.label")}
           description={t("dataForm.fields.date.description")}
         >
-          <input
-            type="date"
-            className={`w-full rounded-xl ` + baseClasses}
+          <Input
+            type="datetime-local"
             value={contextData.date}
             onChange={(e) => setContextData({ ...contextData, date: e.target.value })}
           />
@@ -147,7 +150,7 @@ export default function ContextForm({ baseClasses }: { baseClasses: string }) {
         </Field>
 
         {/* Save Button */}
-        <div>
+        <div className='flex items-center'>
           <Button
             className=""
             onClick={() => createContextMutation({ ...contextData })}

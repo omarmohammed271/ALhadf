@@ -67,7 +67,7 @@ class ExperienceFailureIndicatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExperienceFailureIndicator
         fields = [
-            'indicator_id',
+            'id',
             'visit',
             'visit_detail',
             'comm_event',

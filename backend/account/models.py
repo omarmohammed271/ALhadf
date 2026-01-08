@@ -11,7 +11,6 @@ from django.contrib.auth.models import User
 
 
 class Permission(models.Model):
-    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
     metadata = models.JSONField(default=dict, blank=True)
@@ -21,7 +20,6 @@ class Permission(models.Model):
 
 
 class UserExtension(models.Model):
-    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_extension')
     metadata = models.JSONField(default=dict, blank=True)
 
@@ -50,7 +48,6 @@ class UserProfile(models.Model):
 
 
 class Role(models.Model):
-    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, null=True)
     metadata = models.JSONField(default=dict, blank=True)

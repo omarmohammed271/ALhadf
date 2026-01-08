@@ -11,18 +11,20 @@ import { useEffect } from 'react'
 import UserManagement from './pages/UserManagement/UserManagement'
 import { Toaster } from 'react-hot-toast'
 import { useUserStore } from './store/authStore'
+import ProtectedRoute from './ProtectedRoute'
 
 function App() {
   const { i18n } = useTranslation();
 
   const userData = useUserStore(state => state.userData)
 
-
+  console.log(userData);
+  
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <OverlayProvider>
         <Router>
-          <main dir={i18n.dir(i18n.language)} className='bg-background select-none text-foreground max-h-screen h-screen min-h-screen xl:overflow-hidden flex flex-col py-3 md:px-20'>
+          <main dir={i18n.dir(i18n.language)} className='bg-background select-none text-foreground max-h-screen h-screen min-h-screen xl:overflow-hidden flex flex-col py-3'>
             <NavBar />
             <Routes>
 
@@ -30,39 +32,17 @@ function App() {
               <Route path="/" element={<Home />} />
 
               {/* Auth routes */}
-              <Route path="/auth/login" element={<Login />} />
-
+              <Route path="/auth/login" element={
+                <>
+                  <div className='w-full mx-auto' dir={'ltr'}>
+                    <Login />
+                  </div>
+                </>
+              } />
               {/* Main routes */}
-              {
-                userData.role[0].toLowerCase() != "viewer" ? (
-                  <>
-                  <Route path="/dashboard" element={<>
-                    <div className='flex flex-col flex-1'>
-                      <Dashboard />
-                    </div>
-                    </>
-                  } />
-                  <Route path="/data-input" element={
-                    <div className='flex flex-col flex-1'>
-                      <DataForm />
-                    </div>
-                  } />
-                  {
-                    userData.role[0].toLowerCase() == "superadmin" ? (
-                      <Route path="/user-management" element={<UserManagement />} />
-                    ) : null
-                  }
-                  </>
-                ) : (
-                  <Route path="/dashboard" element={<>
-                    <div className='flex flex-col flex-1'>
-                      <Dashboard />
-                    </div>
-                    </>
-                  } />
-                )
-              }
-            <Route path="/*" element={<Dashboard />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/data-input" element={<ProtectedRoute roles={['admin','superadmin']}><DataForm /></ProtectedRoute>} />
+              <Route path="/user-management" element={<ProtectedRoute roles={['superadmin']}><UserManagement /></ProtectedRoute>} />
             </Routes>
             <Toaster
               position="top-right"

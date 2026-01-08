@@ -39,7 +39,7 @@ export default function CommunicationSignals({baseClasses}: {baseClasses: string
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardContent className="xl:grid grid-cols-2 gap-6">
 
             {/* ER Visit Reference */}
             <Field

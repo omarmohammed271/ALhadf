@@ -6,11 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toISO } from '@/utils/dateHelpers';
-import { t } from 'i18next';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ERVisit({baseClasses}: {baseClasses: string}){
-
+  const { t } = useTranslation();
     
   const [erVisit, setErVisit] = useState<any>({
     patient: "",
@@ -43,7 +43,7 @@ export default function ERVisit({baseClasses}: {baseClasses: string}){
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CardContent className="xl:grid grid-cols-2 gap-6">
 
           {/* Patient Reference */}
           <Field

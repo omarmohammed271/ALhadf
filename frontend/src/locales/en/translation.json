@@ -115,7 +115,6 @@
         "description": "System-derived indicators highlighting breakdowns in patient experience."
       }
     },
-
     "fields": {
       "patient": {
         "label": "Patient Reference",
@@ -233,17 +232,32 @@
       "shift": {
         "label": "Shift",
         "description": "Select the current ER shift.",
-        "placeholder": "Select shift"
+        "placeholder": "Select shift",
+        "choices": {
+          "day": "Day Shift (07:00 - 15:00)",
+          "evening": "Evening Shift (15:00 - 23:00)",
+          "night": "Night Shift (23:00 - 07:00)"
+        }
       },
       "staffingLevel": {
         "label": "Staffing Level",
         "description": "Select the current staffing level for the ER.",
-        "placeholder": "Select staffing level"
+        "placeholder": "Select staffing level",
+        "choices": {
+          "low": "Low Staffing",
+          "medium": "Normal Staffing",
+          "high": "Full Staffing"
+        }
       },
       "capacityLevel": {
         "label": "ER Capacity Level",
         "description": "Select the current ER capacity level.",
-        "placeholder": "Select capacity level"
+        "placeholder": "Select capacity level",
+        "choices": {
+          "under": "Under Capacity",
+          "at": "At Capacity",
+          "over": "Over Capacity"
+        }
       },
       "date": {
         "label": "Date",
@@ -254,106 +268,104 @@
         "description": "Optional metadata in JSON format.",
         "placeholder": "{\"source\": \"manual\", \"notes\": \"\"}"
       }
-    }
     },
-
     "options": {
-      "triageLevels": {
-        "1": "Level 1 – Resuscitation",
-        "2": "Level 2 – Emergent",
-        "3": "Level 3 – Urgent",
-        "4": "Level 4 – Less Urgent",
-        "5": "Level 5 – Non-Urgent"
-      },
+        "triageLevels": {
+          "1": "Level 1 – Resuscitation",
+          "2": "Level 2 – Emergent",
+          "3": "Level 3 – Urgent",
+          "4": "Level 4 – Less Urgent",
+          "5": "Level 5 – Non-Urgent"
+        },
 
-      "main": {
-        "resus": "Main ER"
-      },
-      "fastTrack": {
-        "resus": "Fast Track"
-      },
-      "trauma": {
-        "resus": "Trauma Unit"
-      },
-      "peds": {
-        "resus": "Pediatrics"
-      },
+        "main": {
+          "resus": "Main ER"
+        },
+        "fastTrack": {
+          "resus": "Fast Track"
+        },
+        "trauma": {
+          "resus": "Trauma Unit"
+        },
+        "peds": {
+          "resus": "Pediatrics"
+        },
 
-      "dispositionTypes": {
-        "admitted": "Admitted",
-        "discharged": "Discharged",
-        "lwbs": "Left Without Being Seen",
-        "transferred": "Transferred"
-      },
+        "dispositionTypes": {
+          "admitted": "Admitted",
+          "discharged": "Discharged",
+          "lwbs": "Left Without Being Seen",
+          "transferred": "Transferred"
+        },
 
-      "ageGroups": {
-        "child": "Child",
-        "teen": "Teenager",
-        "youngAdult": "Young Adult",
-        "adult": "Adult",
-        "senior": "Senior"
-      },
+        "ageGroups": {
+          "child": "Child",
+          "teen": "Teenager",
+          "youngAdult": "Young Adult",
+          "adult": "Adult",
+          "senior": "Senior"
+        },
 
-      "communicationEvent": {
-        "initial": "Initial Communication",
-        "delayUpdate": "Delay Update",
-        "clinicalUpdate": "Clinical Update",
-        "other": "Other"
-      },
+        "communicationEvent": {
+          "initial": "Initial Communication",
+          "delayUpdate": "Delay Update",
+          "clinicalUpdate": "Clinical Update",
+          "other": "Other"
+        },
 
-      "roles": {
-        "nurse": "Nurse",
-        "physician": "Physician",
-        "admin": "Administrative Staff"
-      },
+        "roles": {
+          "nurse": "Nurse",
+          "physician": "Physician",
+          "admin": "Administrative Staff"
+        },
 
-      "initiatedBy": {
-        "staff": "Staff",
-        "patient": "Patient"
-      },
+        "initiatedBy": {
+          "staff": "Staff",
+          "patient": "Patient"
+        },
 
-      "revisitReasons": {
-        "worsening": "Symptoms Worsened",
-        "newIssue": "New Unrelated Issue",
-        "planned": "Planned Follow-up"
-      }
-  },
-  "tabs": {
-    "users": "Users & Notify",
-    "notifications": "My Notifications"
-  },
-  "users": {
-    "title": "Users in the system",
-    "subtitle": "View users and send alerts",
-    "first_name": "First Name",
-    "last_name": "Last Name",
-    "username": "Username",
-    "email": "Email",
-    "phone": "Phone"
-  },
-  "alerts": {
-    "notify": "All Notifications",
-    "notify_all": "Here, you can view all the notifications in the system.",
-    "sent": "Alert sent to {{user}}",
-    "failed": "Failed to send alert",
-    "invalid_metadata": "Metadata must be valid JSON",
-    "dialog_title": "Notify {{user}}",
-    "title": "Alert title",
-    "description": "Alert description",
-    "metadata": "Metadata (JSON)",
-    "info": "Info",
-    "warning": "Warning",
-    "critical": "Critical",
-    "all_users": "All Users",
-    "none": "No alerts found"
-  },
-  "common": {
-    "send": "Send",
-    "sending": "Sending...",
-    "cancel": "Cancel",
-    "yes": "Yes",
-    "no": "No"
+        "revisitReasons": {
+          "worsening": "Symptoms Worsened",
+          "newIssue": "New Unrelated Issue",
+          "planned": "Planned Follow-up"
+        }
+    },
+    "tabs": {
+      "users": "Users & Notify",
+      "notifications": "My Notifications"
+    },
+    "users": {
+      "title": "Users in the system",
+      "subtitle": "View users and send alerts",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "alerts": {
+      "notify": "All Notifications",
+      "notify_all": "Here, you can view all the notifications in the system.",
+      "sent": "Alert sent to {{user}}",
+      "failed": "Failed to send alert",
+      "invalid_metadata": "Metadata must be valid JSON",
+      "dialog_title": "Notify {{user}}",
+      "title": "Alert title",
+      "description": "Alert description",
+      "metadata": "Metadata (JSON)",
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical",
+      "all_users": "All Users",
+      "none": "No alerts found"
+    },
+    "common": {
+      "send": "Send",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "yes": "Yes",
+      "no": "No"
+    }
   }
-  
 }
   

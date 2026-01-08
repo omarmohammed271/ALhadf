@@ -11,8 +11,8 @@ export default function DataForm() {
   const baseClasses = " bg-background border-border "
 
   return (
-    <div className="flex-1 h-96 overflow-auto scroll-container">
-      <div className="my-5 h-1 grid lg:grid-cols-2 gap-4">
+    <div className="flex-1 h-96 overflow-auto scroll-container px-2">
+      <div className="my-5 h-1 sm:grid lg:grid-cols-2 sm:gap-2 md:gap-4">
 
         {/* ================================================= */}
         {/* 1. ER VISIT CORE DATA */}
@@ -37,7 +37,9 @@ export default function DataForm() {
         {/* ================================================= */}
         {/* 5. CONTEXT DATA */}
         {/* ================================================= */}
-        <ContextForm baseClasses={baseClasses} />
+        <div className="w-full col-span-2">
+          <ContextForm baseClasses={baseClasses} />
+        </div>
 
       </div>
     </div>

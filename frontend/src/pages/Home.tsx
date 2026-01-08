@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
-  console.log("Home");
   
   const userData = useUserStore((state) => state.userData);
   useEffect(() => {

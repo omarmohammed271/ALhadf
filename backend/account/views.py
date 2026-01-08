@@ -2,12 +2,15 @@ from django.contrib.auth.models import User
 from rest_framework import status, generics
 from rest_framework.authentication import TokenAuthentication
 
-from .serializers import RegistrationSerializer, UserProfileSerializer, RolePermissionSerializer, UserListSerializer
+from .serializers import *
+from .models import *
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .permissions import HasERPermission
+
+from rest_framework import viewsets
 
 
 class RegisterView(generics.CreateAPIView):
@@ -42,6 +45,8 @@ class CustomLoginView(ObtainAuthToken):
         if not user.is_active:
             return Response({"error": "Account is inactive"}, status=status.HTTP_403_FORBIDDEN)
 
+        print(user)
+        print(self.request.data)
         token, created = Token.objects.get_or_create(user=user)
         profile = UserProfile.objects.get(user=user)
 
@@ -59,10 +64,6 @@ class CustomLoginView(ObtainAuthToken):
             'role': roles,
         })
 
-from rest_framework import viewsets
-from .models import Role, UserRole, Permission, RolePermission, UserProfile
-from .serializers import RoleSerializer, UserRoleSerializer, PermissionSerializer
-from rest_framework.permissions import IsAdminUser
 
 
 
