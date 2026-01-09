@@ -102,6 +102,12 @@ export default function UserManagement() {
       queryClient.invalidateQueries({
         queryKey: ["allAlerts", userData?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["userAlerts", userData?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["unreadUserAlerts", userData?.id],
+      });
     },
     onError: (err: any) => {
       toast.error(
@@ -141,7 +147,7 @@ export default function UserManagement() {
   return (
     <div className="flex-1 overflow-auto p-4 md:px-20">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="my-5 mx-auto *:text-lg *:p-6 py-7">
+        <TabsList className="my-5 mx-auto text-sm md:*:text-lg *:p-5 py-6">
           <TabsTrigger value="users">
             {t("dataForm.users.title")}
           </TabsTrigger>

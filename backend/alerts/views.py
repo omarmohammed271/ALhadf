@@ -121,6 +121,7 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
             user=request.user,
             is_read=False
         ).count()
+        print(count)
         
         return Response({'unread_count': count})
 

@@ -44,6 +44,10 @@ export const markReadAlerts: any = async (pk: any) => {
 
 
 
+
+
+
+
 // --- ER Visits ---
 export const getERVisits = async () => {
   const res = await axiosInstance.get("api/patients/visits/");
@@ -98,4 +102,14 @@ export const getFailureIndicators = async () => {
 export const createFailureIndicator = async (data: any) => {
   const res = await axiosMutateInstance.post("api/patients/failure-indicators/", data);
   return res.data;
+};
+
+
+
+
+
+
+export const fetchERDashboard = async () => {
+  const { data } = await axiosInstance.get("/api/er/dashboard/");
+  return data;
 };

@@ -40,9 +40,15 @@ export default function UserNotifications() {
       queryClient.invalidateQueries({
         queryKey: ["userAlerts", userData?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["unreadUserAlerts", userData?.id],
+      });
     },
   });
 
+
+  console.log(myAlerts);
+  
   const handleRead = (alert: any) => {
     if (!alert.is_read && !readPending) {
       toggleRead(alert.id);

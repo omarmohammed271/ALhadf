@@ -67,10 +67,13 @@ export default function NotifDetails() {
       : "default";
 
   return (
-    <Card className="flex-1 overflow-auto mx-20 my-10 bg-muted/30">
+    <Card className="flex-1 overflow-auto mx-5 md:mx-20 my-5 md:my-10 bg-muted/30">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-3">
           <CardTitle className="text-3xl">{alert.title}</CardTitle>
+          <Badge variant={levelVariant}>
+            {alert.level.toUpperCase()}
+          </Badge>
           <p
             className="text-lg text-muted-foreground"
             style={{ whiteSpace: "pre-line" }}
@@ -78,10 +81,6 @@ export default function NotifDetails() {
             {alert.description}
           </p>
         </div>
-
-        <Badge variant={levelVariant}>
-          {alert.level.toUpperCase()}
-        </Badge>
       </CardHeader>
 
       <Separator />

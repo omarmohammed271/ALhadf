@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    ERVisitViewSet, CommunicationEventViewSet,
+    ERVisitViewSet, CommunicationEventViewSet, er_dashboard_api,
     SatisfactionSignalViewSet, ExperienceFailureIndicatorViewSet, ContextDataViewSet
 )
 
@@ -14,4 +14,5 @@ router.register(r'failure-indicators', ExperienceFailureIndicatorViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path("dashboard/", er_dashboard_api, name="er-dashboard"),
 ]
