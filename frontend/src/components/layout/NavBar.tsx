@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import UserDropDown from "@/components/UserDropDown/UserDropDown";
 import { useUserStore } from "@/store/authStore";
+import { Notifications } from "../Notifications/Notifications";
 
 
 function NavBar(){
@@ -67,6 +68,7 @@ function BaseNavBar(){
                 <LanguageSwitch />
                 <ModeToggle />
 
+                <Notifications />
                 <UserDropDown />
             </div>
 

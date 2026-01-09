@@ -8,9 +8,30 @@ export const handleCreateAlert = async (data: any) => {
 };
 
 // Fetch alerts for a specific user
-export const getUserAlerts: any = async () => {
+export const getAllAlerts: any = async () => {
   return axiosInstance
     .get(`api/alerts/user-alerts`)
+    .then(res => res.data);
+};
+
+// Fetch alerts for a specific user
+export const getAlert: any = async (pk: any) => {
+  return axiosInstance
+    .get(`api/alerts/user-alerts/${pk}`)
+    .then(res => res.data);
+};
+
+// Fetch alerts for a specific user
+export const getUserAlerts: any = async () => {
+  return axiosInstance
+    .get(`api/alerts/user-alerts/my-alerts`)
+    .then(res => res.data);
+};
+
+// Fetch alerts for a specific user
+export const markReadAlerts: any = async (pk: any) => {
+  return axiosMutateInstance
+    .post(`api/alerts/user-alerts/${pk}/mark-read/`)
     .then(res => res.data);
 };
 

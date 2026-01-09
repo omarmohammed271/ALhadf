@@ -12,14 +12,14 @@ import UserManagement from './pages/UserManagement/UserManagement'
 import { Toaster } from 'react-hot-toast'
 import { useUserStore } from './store/authStore'
 import ProtectedRoute from './ProtectedRoute'
+import UserNotifications from './pages/UserManagement/UserNotifications'
+import NotifDetails from './pages/UserManagement/NotifDetails'
 
 function App() {
   const { i18n } = useTranslation();
 
   const userData = useUserStore(state => state.userData)
 
-  console.log(userData);
-  
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <OverlayProvider>
@@ -43,6 +43,8 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/data-input" element={<ProtectedRoute roles={['admin','superadmin']}><DataForm /></ProtectedRoute>} />
               <Route path="/user-management" element={<ProtectedRoute roles={['superadmin']}><UserManagement /></ProtectedRoute>} />
+              <Route path="/user-notifications" element={<ProtectedRoute><UserNotifications /></ProtectedRoute>} />
+              <Route path="/user-notifications/:notifId" element={<ProtectedRoute><NotifDetails /></ProtectedRoute>} />
             </Routes>
             <Toaster
               position="top-right"

@@ -346,6 +346,8 @@
     "alerts": {
       "notify": "All Notifications",
       "notify_all": "Here, you can view all the notifications in the system.",
+      "your_notify": "Your Notifications",
+      "your_notify_all": "Here, you can view all your notifications.",
       "sent": "Alert sent to {{user}}",
       "failed": "Failed to send alert",
       "invalid_metadata": "Metadata must be valid JSON",

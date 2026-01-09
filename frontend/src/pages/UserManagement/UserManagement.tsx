@@ -28,7 +28,7 @@ import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { handleCreateAlert, getUserAlerts } from "@/api/serviceAPI";
+import { handleCreateAlert, getAllAlerts } from "@/api/serviceAPI";
 import { toast } from "react-hot-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserStore } from "@/store/authStore";
@@ -54,7 +54,7 @@ export default function UserManagement() {
   // Fetch alerts for current user
   const { data: alerts = [], isLoading: alertsLoading } = useQuery({
     queryKey: ["userAlerts", userData?.id],
-    queryFn: () => getUserAlerts(userData?.id),
+    queryFn: () => getAllAlerts(userData?.id),
     enabled: !!userData?.id,
   });
 

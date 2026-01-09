@@ -92,10 +92,10 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
         """
         return UserAlert.objects.all().select_related('alert').order_by('-alert__triggered_at')
 
-    @action(detail=True, methods=['post'], url_path="toggle-read")
-    def toggle_read(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path="mark-read")
+    def mark_read(self, request, pk=None):
         """
-        Toggle read status of user's own alert.
+        Update to read status of user's own alert.
         """
         user_alert = self.get_object()
         
@@ -106,8 +106,8 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        user_alert.is_read = not user_alert.is_read
-        user_alert.read_at = timezone.now() if user_alert.is_read else None
+        user_alert.is_read = True
+        user_alert.read_at = timezone.now()
         user_alert.save(update_fields=['is_read', 'read_at'])
         
         return Response(self.get_serializer(user_alert).data)
@@ -123,3 +123,14 @@ class UserAlertViewSet(viewsets.ReadOnlyModelViewSet):
         ).count()
         
         return Response({'unread_count': count})
+
+    @action(detail=False, methods=['get'], url_path="my-alerts")
+    def my_alerts(self, request):
+        """
+        Get count of unread alerts for current user.
+        """
+        alerts = UserAlert.objects.filter(
+            user=request.user
+        )
+        serializer = UserAlertSerializer(alerts, many=True)
+        return Response({'data': serializer.data})
