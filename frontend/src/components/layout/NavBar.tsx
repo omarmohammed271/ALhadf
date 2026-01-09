@@ -18,6 +18,10 @@ function NavBar(){
     const location = useLocation();
 
     const userData = useUserStore((state) => state.userData);
+    // console.log(userData);
+    // console.log(localStorage.getItem('user-token'));
+    
+    
     
     useEffect(() => {
         
@@ -71,11 +75,12 @@ function BaseNavBar(){
                 <LanguageSwitch />
                 <ModeToggle />
 
-                {/* Notifications */}
+                
+                 
                 <Link to={`/user-notifications/`} className="relative">
                     <Bell className="h-5 w-5" />
 
-                    {(unreadAlerts as any).unread_count > 0 && (
+                    {(unreadAlerts as any)?.unread_count > 0 && (
                         <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary" />
                     )}
                 </Link>

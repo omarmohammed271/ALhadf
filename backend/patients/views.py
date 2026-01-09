@@ -89,11 +89,10 @@ class ExperienceFailureIndicatorViewSet(viewsets.ModelViewSet):
 
 
 
-
 from django.db import connection
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 
 def dictfetchone(cursor):
@@ -106,8 +105,10 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-@require_GET
-@csrf_exempt
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def er_dashboard_api(request):
     response = {}
 
@@ -123,9 +124,9 @@ def er_dashboard_api(request):
 
         cursor.execute("""
             WITH first_comm AS (
-              SELECT visit_id, MIN(event_ts) AS first_comm_ts
+              SELECT id, MIN(event_ts) AS first_comm_ts
               FROM patients_communicationevent
-              GROUP BY visit_id
+              GROUP BY id
             )
             SELECT
               ROUND(
@@ -135,7 +136,7 @@ def er_dashboard_api(request):
                 2
               ) AS timely_communication_pct
             FROM patients_ervisit v
-            LEFT JOIN first_comm fc USING (visit_id);
+            LEFT JOIN first_comm fc USING (id);
         """)
         response["timely_communication_pct"] = dictfetchone(cursor)
 
@@ -197,27 +198,27 @@ def er_dashboard_api(request):
             SELECT
               v.er_section,
               ROUND(
-                100.0 * COUNT(DISTINCT c.visit_id) / COUNT(DISTINCT v.visit_id),
+                100.0 * COUNT(DISTINCT c.id) / COUNT(DISTINCT v.id),
                 2
               ) AS communication_coverage_pct
             FROM patients_ervisit v
-            LEFT JOIN patients_communicationevent c USING (visit_id)
+            LEFT JOIN patients_communicationevent c USING (id)
             GROUP BY v.er_section;
         """)
         response["communication_coverage_by_er_section"] = dictfetchall(cursor)
 
         cursor.execute("""
             WITH first_comm AS (
-              SELECT visit_id, MIN(event_ts) AS first_comm_ts
+              SELECT id, MIN(event_ts) AS first_comm_ts
               FROM patients_communicationevent
-              GROUP BY visit_id
+              GROUP BY id
             )
             SELECT
               DATE(v.arrival_ts) AS day,
               ROUND(AVG(EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts))/60),2)
                 AS avg_minutes
             FROM patients_ervisit v
-            JOIN first_comm fc USING (visit_id)
+            JOIN first_comm fc USING (id)
             GROUP BY day
             ORDER BY day;
         """)
@@ -228,7 +229,7 @@ def er_dashboard_api(request):
               v.length_of_stay,
               s.overall_score
             FROM patients_ervisit v
-            JOIN patients_satisfactionsignal s USING (visit_id);
+            JOIN patients_satisfactionsignal s USING (id);
         """)
         response["los_vs_satisfaction"] = dictfetchall(cursor)
 
@@ -242,7 +243,7 @@ def er_dashboard_api(request):
               END AS wait_bucket,
               ROUND(AVG(s.overall_score), 2) AS avg_satisfaction
             FROM patients_experiencefailureindicator e
-            JOIN patients_satisfactionsignal s USING (visit_id)
+            JOIN patients_satisfactionsignal s USING (id)
             GROUP BY wait_bucket
             ORDER BY wait_bucket;
         """)
@@ -256,18 +257,18 @@ def er_dashboard_api(request):
                 2
               ) AS lwbs_rate_pct
             FROM patients_ervisit v
-            JOIN patients_experiencefailureindicator e USING (visit_id)
+            JOIN patients_experiencefailureindicator e USING (id)
             GROUP BY v.er_section;
         """)
         response["lwbs_by_er_section"] = dictfetchall(cursor)
 
         cursor.execute("""
             WITH comm_flag AS (
-              SELECT DISTINCT visit_id FROM patients_communicationevent
+              SELECT DISTINCT id FROM patients_communicationevent
             )
             SELECT
               CASE
-                WHEN c.visit_id IS NULL THEN 'No Communication'
+                WHEN c.id IS NULL THEN 'No Communication'
                 ELSE 'Communication'
               END AS communication_status,
               ROUND(
@@ -275,7 +276,7 @@ def er_dashboard_api(request):
                 2
               ) AS revisit_rate
             FROM patients_ervisit v
-            LEFT JOIN comm_flag c USING (visit_id)
+            LEFT JOIN comm_flag c USING (id)
             GROUP BY communication_status;
         """)
         response["revisit_vs_communication"] = dictfetchall(cursor)
@@ -294,9 +295,9 @@ def er_dashboard_api(request):
                 2
               ) AS risk_score
             FROM patients_ervisit v
-            JOIN patients_experiencefailureindicator e USING (visit_id)
+            JOIN patients_experiencefailureindicator e USING (id)
             GROUP BY v.er_section;
         """)
         response["risk_by_er_section"] = dictfetchall(cursor)
 
-    return JsonResponse(response)
+    return Response(response)

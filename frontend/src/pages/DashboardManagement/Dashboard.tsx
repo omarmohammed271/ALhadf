@@ -13,9 +13,13 @@ import LWBSRateBar from "@/components/Charts/ERDshboardCharts/LWBSRateBar";
 import RevisitVsCommunicationBar from "@/components/Charts/ERDshboardCharts/RevisitVsCommunicationBar";
 import SatisfactionByShiftPressure from "@/components/Charts/ERDshboardCharts/SatisfactionByShiftPressure";
 import DissatisfactionRiskBySection from "@/components/Charts/ERDshboardCharts/DissatisfactionRiskBySection";
+import { useERDashboard } from "@/api/endpoints/DashboardEndpoint";
 
 export default function ProcurementDashboard() {
   const { t, i18n } = useTranslation();
+  const {data} = useERDashboard()
+  console.log(data);
+  
   return (
     <div className="p-3 flex flex-col  h-full space-y-2">
 

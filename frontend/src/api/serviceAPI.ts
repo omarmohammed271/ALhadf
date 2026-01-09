@@ -110,6 +110,6 @@ export const createFailureIndicator = async (data: any) => {
 
 
 export const fetchERDashboard = async () => {
-  const { data } = await axiosInstance.get("/api/er/dashboard/");
+  const { data } = await axiosInstance.get("/api/patients/dashboard/");
   return data;
 };

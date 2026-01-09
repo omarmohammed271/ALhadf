@@ -13,6 +13,7 @@ router.register(r'context', ContextDataViewSet)
 router.register(r'failure-indicators', ExperienceFailureIndicatorViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
     path("dashboard/", er_dashboard_api, name="er-dashboard"),
+    path('', include(router.urls)),
+    
 ]
