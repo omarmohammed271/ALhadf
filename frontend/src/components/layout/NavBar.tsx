@@ -8,6 +8,9 @@ import { useEffect } from "react";
 import UserDropDown from "@/components/UserDropDown/UserDropDown";
 import { useUserStore } from "@/store/authStore";
 import { Notifications } from "../Notifications/Notifications";
+import { Bell } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getUnreadAlertsCount } from "@/api/serviceAPI";
 
 
 function NavBar(){
@@ -34,7 +37,18 @@ function BaseNavBar(){
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const userData = useUserStore((state) => state.userData);
     
+    const { data: unreadAlerts, isPending: alertsPending } = useQuery({
+        queryKey: ["userAlerts", userData?.id],
+        queryFn: getUnreadAlertsCount,
+        enabled: !!userData?.id,
+    });
+
+    const unreadCount = (unreadAlerts as any)?.count ?? 0;
+    
+
     return(
         <div className="px-3 justify-between z-50 h-fit border-border backdrop-blur-md py-1 flex w-full min-[2000px]:py-px items-center">
 
@@ -68,7 +82,13 @@ function BaseNavBar(){
                 <LanguageSwitch />
                 <ModeToggle />
 
-                <Notifications />
+                <Link to={`/user-notifications/`}>
+                    <Bell className="h-5 w-5" />
+
+                    {unreadCount > 0 && (
+                        <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+                    )}
+                </Link>
                 <UserDropDown />
             </div>
 

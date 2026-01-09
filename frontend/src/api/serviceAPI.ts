@@ -22,6 +22,13 @@ export const getAlert: any = async (pk: any) => {
 };
 
 // Fetch alerts for a specific user
+export const getUnreadAlertsCount: any = async () => {
+  return axiosInstance
+    .get(`api/alerts/user-alerts/unread-count`)
+    .then(res => res.data);
+};
+
+// Fetch alerts for a specific user
 export const getUserAlerts: any = async () => {
   return axiosInstance
     .get(`api/alerts/user-alerts/my-alerts`)

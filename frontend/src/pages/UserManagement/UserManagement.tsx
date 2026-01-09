@@ -26,69 +26,96 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MoreVertical } from "lucide-react";
 import { useState } from "react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { handleCreateAlert, getAllAlerts } from "@/api/serviceAPI";
 import { toast } from "react-hot-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { useUserStore } from "@/store/authStore";
 import { getUsers } from "@/api/authAPI";
 import { queryClient } from "@/lib/react-query";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function UserManagement() {
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("users");
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
 
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
-  // Alert form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [level, setLevel] = useState("info");
   const [metadata, setMetadata] = useState("");
 
   const userData = useUserStore(state => state.userData);
-  
-  // Fetch alerts for current user
-  const { data: alerts = [], isLoading: alertsLoading } = useQuery({
-    queryKey: ["userAlerts", userData?.id],
+
+  /* -------------------------
+     Alerts
+  --------------------------*/
+  const { data: alerts, isLoading: alertsLoading } = useQuery({
+    queryKey: ["allAlerts", userData?.id],
     queryFn: () => getAllAlerts(userData?.id),
     enabled: !!userData?.id,
   });
 
-  // Fetch all users
+  /* -------------------------
+     Users
+  --------------------------*/
   const { data: allUsers = [], isLoading: usersLoading } = useQuery({
     queryKey: ["all_users"],
     queryFn: getUsers,
   });
 
-  // Mutation for creating alerts
+  /* -------------------------
+     Create alert
+  --------------------------*/
   const mutation = useMutation({
-    mutationFn: (data: { title: string; description: string; level: string; metadata: any; user_ids: any }) =>
-      handleCreateAlert(data),
+    mutationFn: handleCreateAlert,
     onSuccess: () => {
-      toast.success(`Alert sent successfully to ${selectedUser?.profile?.first_name || "all users"}`);
+      toast.success(
+        `Alert sent successfully to ${
+          selectedUser?.profile?.first_name || "all users"
+        }`
+      );
+
       setOpen(false);
       setTitle("");
       setDescription("");
       setLevel("info");
       setMetadata("");
-      queryClient.invalidateQueries(alerts)
+
+      queryClient.invalidateQueries({
+        queryKey: ["allAlerts", userData?.id],
+      });
     },
     onError: (err: any) => {
       toast.error(
         err?.response?.data?.detail ||
-        err?.response?.data?.message ||
-        err.message ||
-        "Failed to send alert"
+          err?.response?.data?.message ||
+          err.message ||
+          "Failed to send alert"
       );
     },
   });
 
   const handleSend = () => {
     if (mutation.isPending) return;
+
     if (!title || !description) {
       toast.error("Title and description are required");
       return;
@@ -107,190 +134,23 @@ export default function UserManagement() {
       description,
       level,
       metadata: parsedMetadata,
-      user_ids: selectedUser ? [selectedUser.id] : '',
+      user_ids: selectedUser ? [selectedUser.id] : "",
     });
   };
-
-  const notifications = [
-    {
-      id: 1,
-      is_read: false,
-      user: { username: "er_ops" },
-      alert: {
-        title: "First Contact Delay",
-        description: "Avg time to first contact reached 24 min, exceeding 20 min threshold.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:12:00",
-      },
-    },
-    {
-      id: 2,
-      is_read: false,
-      user: { username: "icu_head" },
-      alert: {
-        title: "ICU Communication Drop",
-        description: "ICU communication coverage dropped to 60%, below 85% threshold.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:18:00",
-      },
-    },
-    {
-      id: 3,
-      is_read: false,
-      user: { username: "er_manager" },
-      alert: {
-        title: "LWBS Rate Breach",
-        description: "Main ER LWBS rate reached 9.4%, exceeding 5% threshold.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:21:00",
-      },
-    },
-    {
-      id: 4,
-      is_read: false,
-      user: { username: "quality_team" },
-      alert: {
-        title: "High Revisit Risk",
-        description: "Revisit rate without communication reached 18.2%, above 12% threshold.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:25:00",
-      },
-    },
-    {
-      id: 5,
-      is_read: true,
-      user: { username: "quality_team" },
-      alert: {
-        title: "Low Patient Satisfaction",
-        description: "Overall satisfaction dropped to 70%, below expected target.",
-        level: "warning",
-        triggered_at: "2026-01-05T09:30:00",
-      },
-    },
-    {
-      id: 6,
-      is_read: false,
-      user: { username: "er_ops" },
-      alert: {
-        title: "Level 4 Waiting Time Exceeded",
-        description: "Triage Level 4 waiting time exceeded 30 minutes.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:34:00",
-      },
-    },
-    {
-      id: 7,
-      is_read: false,
-      user: { username: "er_ops" },
-      alert: {
-        title: "Level 5 Extended Delay",
-        description: "Level 5 patients experienced waiting times up to 50 minutes.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:36:00",
-      },
-    },
-    {
-      id: 8,
-      is_read: true,
-      user: { username: "nursing_supervisor" },
-      alert: {
-        title: "Observation Communication Gap",
-        description: "Observation section communication coverage dropped to 70%.",
-        level: "warning",
-        triggered_at: "2026-01-05T09:40:00",
-      },
-    },
-    {
-      id: 9,
-      is_read: false,
-      user: { username: "er_manager" },
-      alert: {
-        title: "Arrival Delay Trend",
-        description: "Upward trend detected in arrival-to-first-contact time over 3 days.",
-        level: "warning",
-        triggered_at: "2026-01-05T09:42:00",
-      },
-    },
-    {
-      id: 10,
-      is_read: false,
-      user: { username: "quality_team" },
-      alert: {
-        title: "LOS Impact on Satisfaction",
-        description: "LOS above 90 minutes correlated with satisfaction below 60%.",
-        level: "warning",
-        triggered_at: "2026-01-05T09:45:00",
-      },
-    },
-    {
-      id: 11,
-      is_read: false,
-      user: { username: "er_manager" },
-      alert: {
-        title: "High Shift Pressure",
-        description: "Night shift under high pressure showed satisfaction at 50%.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:48:00",
-      },
-    },
-    {
-      id: 12,
-      is_read: false,
-      user: { username: "quality_team" },
-      alert: {
-        title: "Triage Dissatisfaction Risk",
-        description: "Triage dissatisfaction risk score reached 85.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:52:00",
-      },
-    },
-    {
-      id: 13,
-      is_read: true,
-      user: { username: "er_ops" },
-      alert: {
-        title: "Fast Track LWBS Increase",
-        description: "Fast Track LWBS rate exceeded normal baseline.",
-        level: "warning",
-        triggered_at: "2026-01-05T09:55:00",
-      },
-    },
-    {
-      id: 14,
-      is_read: false,
-      user: { username: "nursing_supervisor" },
-      alert: {
-        title: "Delayed First Communication",
-        description: "Average time to first communication exceeded 15 minutes.",
-        level: "critical",
-        triggered_at: "2026-01-05T09:58:00",
-      },
-    },
-    {
-      id: 15,
-      is_read: true,
-      user: { username: "quality_team" },
-      alert: {
-        title: "Cardiology Risk Trend",
-        description: "Cardiology dissatisfaction risk score is trending upward.",
-        level: "warning",
-        triggered_at: "2026-01-05T10:00:00",
-      },
-    },
-  ];
-  
-  
-  
 
   return (
     <div className="flex-1 overflow-auto p-4 md:px-20">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="my-5 mx-auto *:text-lg *:p-6 py-7">
-          <TabsTrigger value="users">{t('dataForm.users.title')}</TabsTrigger>
-          <TabsTrigger value="notifications">{t('dataForm.alerts.notify')}</TabsTrigger>
+          <TabsTrigger value="users">
+            {t("dataForm.users.title")}
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            {t("dataForm.alerts.notify")}
+          </TabsTrigger>
         </TabsList>
 
-        {/* USERS & NOTIFY TAB */}
+        {/* USERS TAB */}
         <TabsContent value="users">
           <div className="flex justify-between">
             <div>
@@ -422,9 +282,11 @@ export default function UserManagement() {
         {/* NOTIFICATIONS TAB */}
         <TabsContent value="notifications">
           <div>
-            <h1 className="text-4xl font-bold my-5">{t('dataForm.alerts.notify')}</h1>
+            <h1 className="text-4xl font-bold my-5">
+              {t("dataForm.alerts.notify")}
+            </h1>
             <h2 className="text-xl my-5 text-muted-foreground">
-              {t('dataForm.alerts.notify_all')}
+              {t("dataForm.alerts.notify_all")}
             </h2>
           </div>
 
@@ -433,7 +295,7 @@ export default function UserManagement() {
           ) : alerts.length > 0 ? (
             <Table className="bg-primary/5 backdrop-blur-2xl p-4 rounded-2xl overflow-hidden border-border">
               <TableHeader>
-                <TableRow className="*:p-3 border-border bg-secondary/10 hover:bg-secondary/5 rounded-2xl">
+                <TableRow className="*:p-3 border-border bg-secondary/10">
                   <TableHead>Title</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>To</TableHead>
@@ -444,51 +306,45 @@ export default function UserManagement() {
               </TableHeader>
               <TableBody>
                 {alerts.map((alert: any) => (
-                  <TableRow className="*:px-5 border-border" key={alert.id}>
-                    <TableCell>{alert.alert?.title ?? "-"}</TableCell>
-                    <TableCell className="">{alert.alert?.description ?? "-"}</TableCell>
+                  <TableRow className="*:px-5 border-border cursor-pointer" key={alert.id} onClick={() => {navigate(`/user-notifications/${alert.id}/`);}}>
+                    <TableCell className="whitespace-pre-line max-w-40">
+                      {String(alert.alert?.title ?? "-").slice(0, 100)}
+                      {String(alert.alert?.title ?? "").length > 100 && "…"}
+                    </TableCell>
+                    <TableCell className="whitespace-pre-line max-w-40">
+                      {String(alert.alert?.description ?? "-").slice(0, 100)}
+                      {String(alert.alert?.description ?? "").length > 100 && "…"}
+                    </TableCell>
                     <TableCell>{alert.user?.username ?? "-"}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        alert.alert?.level === 'critical' ? 'bg-red-100 text-red-800' :
-                        alert.alert?.level === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          alert.alert?.level === "critical"
+                            ? "bg-red-100 text-red-800"
+                            : alert.alert?.level === "warning"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
                         {alert.alert?.level ?? "-"}
                       </span>
                     </TableCell>
-                    <TableCell>{alert.alert?.triggered_at ? new Date(alert.alert.triggered_at).toLocaleString() : "-"}</TableCell>
                     <TableCell>
-                      <span className={`font-medium ${
-                        alert.is_read ? 'text-green-700' : 'text-red-700'
-                      }`}>
-                        {alert.is_read ? 'Yes' : 'No'}
-                      </span>
+                      {alert.alert?.triggered_at
+                        ? new Date(
+                            alert.alert.triggered_at
+                          ).toLocaleString()
+                        : "-"}
                     </TableCell>
-                  </TableRow>
-                ))}
-
-                {/* Dummy notifications */}
-                {notifications.map((alert: any) => (
-                  <TableRow className="*:px-5 border-border" key={alert.id}>
-                    <TableCell>{alert.alert?.title ?? "-"}</TableCell>
-                    <TableCell className="">{alert.alert?.description ?? "-"}</TableCell>
-                    <TableCell>{alert.user?.username ?? "-"}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        alert.alert?.level === 'critical' ? 'bg-red-100 text-red-800' :
-                        alert.alert?.level === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {alert.alert?.level ?? "-"}
-                      </span>
-                    </TableCell>
-                    <TableCell>{alert.alert?.triggered_at ? new Date(alert.alert.triggered_at).toLocaleString() : "-"}</TableCell>
-                    <TableCell>
-                      <span className={`font-medium ${
-                        alert.is_read ? 'text-green-700' : 'text-red-700'
-                      }`}>
-                        {alert.is_read ? 'Yes' : 'No'}
+                      <span
+                        className={`font-medium ${
+                          alert.is_read
+                            ? "text-green-700"
+                            : "text-red-700"
+                        }`}
+                      >
+                        {alert.is_read ? "Yes" : "No"}
                       </span>
                     </TableCell>
                   </TableRow>
@@ -496,7 +352,9 @@ export default function UserManagement() {
               </TableBody>
             </Table>
           ) : (
-            <p className="text-muted-foreground text-center py-8">No alerts found.</p>
+            <p className="text-muted-foreground text-center py-8">
+              No alerts found.
+            </p>
           )}
         </TabsContent>
       </Tabs>

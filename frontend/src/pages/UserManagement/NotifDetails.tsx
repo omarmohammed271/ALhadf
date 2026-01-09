@@ -9,50 +9,60 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAlert } from "@/api/serviceAPI";
 
-type NotifDetailsProps = {
-  data: {
-    id: number;
-    is_read: boolean;
-    read_at: string | null;
-    user: {
-      username: string;
-      email: string;
-      first_name: string;
-      last_name: string;
-      profile: {
-        department: string;
-        position: string;
-      };
-    };
-    alert: {
-      title: string;
-      description: string;
-      level: "info" | "warning" | "error";
-      status: "read" | "unread";
-      triggered_at: string;
-    };
-  };
-};
-
 export default function NotifDetails() {
-    
-    const { notifId } = useParams();
+  const { notifId } = useParams();
 
-    // // Fetch alerts for current user
-    const { data: thisAlert, isPending: alertsPending } = useQuery({
-        queryKey: ["userAlerts", notifId],
-        queryFn: () => getAlert(notifId),
-        enabled: !!notifId,
-    });
-    
-    console.log(notifId);
-    console.log(thisAlert);
-    const { user, alert, is_read } = thisAlert as any || {};
+  const {
+    data: thisAlert,
+    isPending,
+  } = useQuery({
+    queryKey: ["userAlert", notifId],
+    queryFn: () => getAlert(notifId),
+    enabled: !!notifId,
+  });
 
-    const levelVariant =
-    alert?.level === "critical"
+  /* -------------------------------
+     Pending state
+  --------------------------------*/
+  if (isPending) {
+    return (
+      <Card className="flex-1 mx-20 my-10 animate-pulse bg-muted/50">
+        <CardHeader className="space-y-3">
+          <div className="h-8 w-2/3 bg-muted rounded" />
+          <div className="h-4 w-full bg-muted rounded" />
+          <div className="h-4 w-5/6 bg-muted rounded" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="h-12 w-64 bg-muted rounded" />
+          <div className="h-4 w-48 bg-muted rounded" />
+          <div className="h-4 w-56 bg-muted rounded" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  /* -------------------------------
+     No alert found
+  --------------------------------*/
+  if (!thisAlert || !(thisAlert as any).alert) {
+    return (
+      <Card className="flex-1 mx-20 my-10">
+        <CardContent className="py-20 text-center">
+          <p className="text-lg font-medium">Notification not found</p>
+          <p className="text-muted-foreground mt-1">
+            This alert may have been deleted or you don’t have access to it.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { user, alert, is_read } = thisAlert as any;
+
+  const levelVariant =
+    alert.level === "critical"
       ? "destructive"
-      : alert?.level === "warning"
+      : alert.level === "warning"
       ? "secondary"
       : "default";
 
@@ -60,14 +70,17 @@ export default function NotifDetails() {
     <Card className="flex-1 overflow-auto mx-20 my-10 bg-muted/30">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="space-y-3">
-          <CardTitle className="text-3xl">{alert?.title}</CardTitle>
-          <p className="text-lg text-muted-foreground" style={{ whiteSpace: 'pre-line' }}>
-            {alert?.description}
+          <CardTitle className="text-3xl">{alert.title}</CardTitle>
+          <p
+            className="text-lg text-muted-foreground"
+            style={{ whiteSpace: "pre-line" }}
+          >
+            {alert.description}
           </p>
         </div>
 
-        <Badge variant={levelVariant} className="">
-          {alert?.level.toUpperCase()}
+        <Badge variant={levelVariant}>
+          {alert.level.toUpperCase()}
         </Badge>
       </CardHeader>
 
@@ -78,17 +91,18 @@ export default function NotifDetails() {
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarFallback>
-              {user?.first_name[0]}
-              {user?.last_name[0]}
+              {user?.first_name?.[0]}
+              {user?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
 
           <div className="leading-tight">
             <p className="font-medium">
-              {user?.first_name} {user?.last_name}
+              {user.first_name} {user.last_name}
             </p>
             <p className="text-sm text-muted-foreground">
-              {user?.profile.position} · {user?.profile.department.toUpperCase()}
+              {user.profile.position} ·{" "}
+              {user.profile.department?.toUpperCase()}
             </p>
           </div>
         </div>
@@ -97,13 +111,13 @@ export default function NotifDetails() {
         <div className="grid gap-2 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Mail className="h-4 w-4" />
-            <span>{user?.email}</span>
+            <span>{user.email}</span>
           </div>
 
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span>
-              {new Date(alert?.triggered_at).toLocaleString()}
+              {new Date(alert.triggered_at).toLocaleString()}
             </span>
           </div>
 
