@@ -1,7 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { ThemeProvider } from "@/components/theme-provider"
 import NavBar from './components/layout/NavBar'
-import Dashboard from './pages/DashboardManagement/Dashboard'
+import ERDashboard from './pages/DashboardManagement/Dashboard'
 import { OverlayProvider } from './context/AIOverlayContext'
 import { useTranslation } from 'react-i18next'
 import DataForm from './pages/DashboardManagement/DataForm'
@@ -40,7 +40,7 @@ function App() {
                 </>
               } />
               {/* Main routes */}
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><ERDashboard /></ProtectedRoute>} />
               <Route path="/data-input" element={<ProtectedRoute roles={['admin','superadmin']}><DataForm /></ProtectedRoute>} />
               <Route path="/user-management" element={<ProtectedRoute roles={['superadmin']}><UserManagement /></ProtectedRoute>} />
               <Route path="/user-notifications" element={<ProtectedRoute><UserNotifications /></ProtectedRoute>} />

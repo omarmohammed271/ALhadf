@@ -14,11 +14,37 @@ import RevisitVsCommunicationBar from "@/components/Charts/ERDshboardCharts/Revi
 import SatisfactionByShiftPressure from "@/components/Charts/ERDshboardCharts/SatisfactionByShiftPressure";
 import DissatisfactionRiskBySection from "@/components/Charts/ERDshboardCharts/DissatisfactionRiskBySection";
 import { useERDashboard } from "@/api/endpoints/DashboardEndpoint";
+import { Skeleton } from "@/components/ui/skeleton";
+import { transformERDashboard } from "@/utils/transformERDashboard";
 
-export default function ProcurementDashboard() {
+export default function ERDashboard() {
   const { t, i18n } = useTranslation();
-  const {data} = useERDashboard()
-  console.log(data);
+  const {data: dashboardData, isPending} = useERDashboard()
+  console.log(dashboardData);
+  const transformed = dashboardData ? transformERDashboard(dashboardData) : null;
+  console.log(transformed);
+  
+  type DashboardData = typeof transformed
+  if (isPending) {
+    return (
+      <div className="p-3 flex flex-col h-full space-y-2">
+  
+        {/* Stat cards skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-6 gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-[110px]" />
+          ))}
+        </div>
+  
+        {/* Charts skeleton */}
+        <div className="grid flex-1 grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-2">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} className="" />
+          ))}
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="p-3 flex flex-col  h-full space-y-2">
@@ -26,47 +52,48 @@ export default function ProcurementDashboard() {
       {/* ── Stat Cards ── */}
       <div className="grid h-fit grid-cols-1 lg:grid-cols-2 xl:grid-cols-6 gap-2">
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.avgTimeToFirstContact')}
-          value="12 min" // Replace with dynamic calculation: mean(arrival → first contact)
-          icon={<Clock />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.avgTimeToFirstContact')}
+        value={`${transformed?.stats.avgTimeToFirstContact || 0}`}
+        icon={<Clock />}
+      />
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.pctTimelyCommunication')}
-          value="78%" // Replace with dynamic calculation: % of visits with ≥1 communication event within threshold
-          icon={<MessageCircle />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.pctTimelyCommunication')}
+        value={`${transformed?.stats.pctTimelyCommunication || 0}`}
+        icon={<MessageCircle />}
+      />
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.overallPatientSatisfaction')}
-          value="4.2 / 5" // Replace with dynamic average overall satisfaction
-          icon={<Smile />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.overallPatientSatisfaction')}
+        value={`${transformed?.stats.overallSatisfaction || 0}`}
+        icon={<Smile />}
+      />
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.lwbsRate')}
-          value="5%" // Replace with dynamic % of visits ending as LWBS
-          icon={<UserX />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.lwbsRate')}
+        value={`${transformed?.stats.lwbsRate || 0}`}
+        icon={<UserX />}
+      />
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.revisitRate72h')}
-          value="8%" // Replace with dynamic % of patients returning within 72h
-          icon={<Repeat />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.revisitRate72h')}
+        value={`${transformed?.stats.revisitRate72h || 0}`}
+        icon={<Repeat />}
+      />
 
-        <StatsCard
-          className="border border-border h-full p-4 rounded-2xl"
-          title={t('er.statCards.highDissatisfactionRisk')}
-          value="10%" // Replace with dynamic % flagged by risk model
-          icon={<AlertCircle />} 
-        />
+      <StatsCard
+        className="border border-border h-full p-4 rounded-2xl"
+        title={t('er.statCards.highDissatisfactionRisk')}
+        value={`${transformed?.stats.highDissatisfactionRisk || 0}`}
+        icon={<AlertCircle />}
+      />
+
 
       </div>
 
@@ -77,12 +104,24 @@ export default function ProcurementDashboard() {
         {/* Upper */}
         <div className=" flex flex-col space-y-2 col-span-1">
           <ArrivalToFirstContactTrend
+            data={transformed?.arrivalToFirstContactTrend.slice(0, 5)}
+            granularity="daily"
+            threshold={20}
+          />
+
+          <WaitingTimeByTriage
+            data={Object.entries(transformed?.waitingTimeByTriage).map(([level, minutesArray]) => ({
+              level,
+              minutes: (minutesArray as number[]).slice(0, 5),
+            }))}
+            threshold={30}
+          />
+        {/* <ArrivalToFirstContactTrend
             data={[
-              { date: "2024-01-01", avgMinutes: 18 },
-              { date: "2024-01-02", avgMinutes: 21 },
-              { date: "2024-01-03", avgMinutes: 24 },
-              { date: "2024-01-04", avgMinutes: 20 },
-              { date: "2024-01-05", avgMinutes: 22 },
+              { section: "Main ER", avgMinutes: 18 },
+              { section: "Fast Track", avgMinutes: 21 },
+              { section: "Trauma Bay", avgMinutes: 24 },
+              { section: "Pediatrics", avgMinutes: 20 },
             ]}
             granularity="daily"   // or "weekly"
             threshold={20}
@@ -96,11 +135,22 @@ export default function ProcurementDashboard() {
                 { level: "Level 5", minutes: [40, 45, 42, 38, 50] },
             ]}
             threshold={30}
-          />
+          /> */}
         </div>
 
         <div className=" flex flex-col space-y-2 col-span-1">
           <CommunicationCoverageBar
+            sections={transformed?.communicationCoverage.map((d: any) => d.section)}
+            coverage={transformed?.communicationCoverage.map((d: any) => d.coveragePct)}
+            threshold={85}
+          />
+
+          <TimeToFirstCommunicationLine
+            dates={transformed?.firstCommunicationTrend.map((d: any) => d.date)}
+            avgMinutes={transformed?.firstCommunicationTrend.map((d: any) => d.avgMinutes)}
+            threshold={15}
+          />
+          {/* <CommunicationCoverageBar
             sections={
               i18n.language === "en"
                 ? ["Triage", "ER Room A", "ER Room B", "Observation", "ICU"]
@@ -113,13 +163,24 @@ export default function ProcurementDashboard() {
             dates={["2025-10-01", "2025-10-02", "2025-10-03", "2025-10-04"]}
             avgMinutes={[12, 15, 10, 18]}
             threshold={15}
-          />
+          /> */}
 
         </div>
 
 
         <div className=" flex flex-col space-y-2 col-span-1">
           <LOSvsSatisfaction
+            lengthsOfStay={transformed?.losVsSatisfaction.map((d: any) => d.losBucketMinutes)}
+            satisfactionScores={transformed?.losVsSatisfaction.map((d: any) => d.avgSatisfactionPct)}
+            threshold={70}
+          />
+
+          <FirstContactDelayLine
+            buckets={transformed?.firstContactDelay.map((d: any) => d.bucket)}
+            avgSatisfaction={transformed?.firstContactDelay.map((d: any) => d.avgSatisfaction)}
+            threshold={10}
+          />
+          {/* <LOSvsSatisfaction
             lengthsOfStay={[30, 45, 60, 75, 90, 120]}
             satisfactionScores={[95, 90, 85, 70, 60, 50]}
             threshold={70}    
@@ -128,12 +189,31 @@ export default function ProcurementDashboard() {
             buckets={["0-5 min", "5-10 min", "10-15 min", "15-30 min", "30+ min"]}
             avgSatisfaction={[95, 88, 80, 70, 60]}
             threshold={10}
-          />
+          /> */}
         </div>
 
 
         <div className=" flex flex-col gap-y-2 col-span-1">
-          <LWBSRateBar
+        <LWBSRateBar
+          sections={
+            i18n.language === "en"
+              ? transformed?.lwbsBySection.map((d: any) => d.communicationStatus) // section names
+              : ["الفرز", "المسار السريع", "الطوارئ الرئيسية", "الإنعاش"] // or map similarly if Arabic labels exist in data
+          }
+          lwbsRates={transformed?.lwbsBySection.map((d: any) => d.revisitRatePct)}
+          threshold={5}
+        />
+
+        <RevisitVsCommunicationBar
+          categories={
+            i18n.language === "en"
+              ? transformed?.revisitVsCommunication.map((d: any) => d.communicationStatus)
+              : ["تم التواصل", "لم يتم التواصل"] // map similarly if Arabic labels exist in data
+          }
+          revisitRates={transformed?.revisitVsCommunication.map((d: any) => d.revisitRatePct)}
+          threshold={12}
+        />
+          {/* <LWBSRateBar
             sections={
               i18n.language === "en"
                 ? ["Triage", "Fast Track", "Main ER", "Resuscitation"]
@@ -151,12 +231,13 @@ export default function ProcurementDashboard() {
             }
             revisitRates={[8.5, 18.2]}
             threshold={12}
-          />
+          /> */}
         </div>
 
 
         <div className='md:flex mb-2 justify-center xl:flex-col max-xl:space-x-2 space-y-2 col-span-2 xl:col-span-1 p-2 bg-linear-to-br border-border from-primary/10 to-secondary/10 border rounded-xl '>
-          <SatisfactionByShiftPressure
+          
+          {/* <SatisfactionByShiftPressure
             data={[
               { shift: 'Morning', pressureLevel: 'High', satisfaction: 62 },
               { shift: 'Afternoon', pressureLevel: 'High', satisfaction: 55 },
@@ -177,7 +258,7 @@ export default function ProcurementDashboard() {
               { section: 'Cardiology', riskScore: 40 },
               { section: 'General', riskScore: 25 },
             ]}
-          />
+          /> */}
         </div>
 
 

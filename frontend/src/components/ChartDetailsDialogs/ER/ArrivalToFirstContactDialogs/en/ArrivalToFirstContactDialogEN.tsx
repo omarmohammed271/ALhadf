@@ -5,7 +5,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 type TrendPoint = {
-  date: string;
+  section: string;
   avgMinutes: number;
 };
 
@@ -98,12 +98,12 @@ const ArrivalToFirstContactDialogEN: React.FC<{
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr key={row.date}>
-                  <td className="border p-2">{row.date}</td>
+                <tr key={row.section}>
+                  <td className="border p-2">{row.section}</td>
                   <td 
                     className={`border p-2 text-right ${
                       threshold ?
-                      row.avgMinutes < threshold
+                      row.avgMinutes > threshold
                         ? "text-red-600 dark:text-red-400"
                         : "text-muted-foreground"
                       : ""

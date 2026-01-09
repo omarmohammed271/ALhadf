@@ -114,190 +114,379 @@ def er_dashboard_api(request):
 
     with connection.cursor() as cursor:
 
-        cursor.execute("""
-            SELECT
-              ROUND(AVG(EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts)) / 60), 2)
-              AS avg_minutes_to_first_contact
-            FROM patients_ervisit;
-        """)
-        response["avg_time_to_first_contact"] = dictfetchone(cursor)
+      cursor.execute("""
+        SELECT
+          ROUND(
+            AVG(EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts)) / 60)
+            FILTER (WHERE first_contact_ts IS NOT NULL
+                  AND first_contact_ts >= arrival_ts),
+            0
+          ) AS avg_time_to_first_contact
+        FROM patients_ervisit;
 
-        cursor.execute("""
-            WITH first_comm AS (
-              SELECT id, MIN(event_ts) AS first_comm_ts
-              FROM patients_communicationevent
-              GROUP BY id
-            )
+      """)
+      response["avg_time_to_first_contact"] = dictfetchone(cursor)
+
+
+      # Timely communication % (≤ 30 min)
+      cursor.execute("""
+          WITH first_comm AS (
             SELECT
+              visit_id,
+              MIN(event_ts) AS first_comm_ts
+            FROM patients_communicationevent
+            GROUP BY visit_id
+          )
+          SELECT
+            ROUND(
+              100.0 * COUNT(*) FILTER (
+                WHERE fc.first_comm_ts IS NOT NULL
+                  AND EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts)) / 60 <= 15
+              ) / NULLIF(COUNT(*), 0),
+              0
+            ) AS timely_communication_pct
+          FROM patients_ervisit v
+          LEFT JOIN first_comm fc
+            ON fc.visit_id = v.id;
+
+      """)
+      response["timely_communication_pct"] = dictfetchone(cursor)
+
+
+      # Avg satisfaction
+      cursor.execute("""
+          SELECT
+            ROUND(AVG(overall_score), 1) AS avg_satisfaction
+          FROM patients_satisfactionsignal
+          WHERE overall_score IS NOT NULL;
+      """)
+      response["avg_satisfaction"] = dictfetchone(cursor)
+
+
+      # LWBS rate
+      cursor.execute("""
+          SELECT
+              er_section,
+              COUNT(*) AS total_visits,
+              COUNT(CASE WHEN disposition_type = 'lwbs' THEN 1 END) AS lwbs_count,
               ROUND(
-                100.0 * COUNT(*) FILTER (
-                  WHERE EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts))/60 <= 30
-                ) / COUNT(*),
-                2
-              ) AS timely_communication_pct
-            FROM patients_ervisit v
-            LEFT JOIN first_comm fc USING (id);
-        """)
-        response["timely_communication_pct"] = dictfetchone(cursor)
-
-        cursor.execute("""
-            SELECT ROUND(AVG(overall_score), 2) AS avg_satisfaction
-            FROM patients_satisfactionsignal;
-        """)
-        response["avg_satisfaction"] = dictfetchone(cursor)
-
-        cursor.execute("""
-            SELECT
-              ROUND(100.0 * COUNT(*) FILTER (WHERE lwbs) / COUNT(*), 2)
-              AS lwbs_rate_pct
-            FROM patients_experiencefailureindicator;
-        """)
-        response["lwbs_rate"] = dictfetchone(cursor)
-
-        cursor.execute("""
-            SELECT
-              ROUND(100.0 * COUNT(*) FILTER (WHERE revisit_72h) / COUNT(*), 2)
-              AS revisit_rate_pct
-            FROM patients_ervisit;
-        """)
-        response["revisit_rate"] = dictfetchone(cursor)
-
-        cursor.execute("""
-            SELECT
-              ROUND(
-                100.0 * COUNT(*) FILTER (
-                  WHERE time_to_first_contact > INTERVAL '60 minutes'
-                     OR time_without_communication > INTERVAL '60 minutes'
-                ) / COUNT(*),
-                2
-              ) AS high_risk_pct
-            FROM patients_experiencefailureindicator;
-        """)
-        response["high_risk_pct"] = dictfetchone(cursor)
-
-        cursor.execute("""
-            SELECT
-              DATE(arrival_ts) AS day,
-              ROUND(AVG(EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts))/60),2)
-                AS avg_minutes
-            FROM patients_ervisit
-            GROUP BY day
-            ORDER BY day;
-        """)
-        response["arrival_to_first_contact_trend"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            SELECT
-              triage_level,
-              EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts))/60 AS wait_minutes
-            FROM patients_ervisit;
-        """)
-        response["waiting_time_by_triage"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            SELECT
-              v.er_section,
-              ROUND(
-                100.0 * COUNT(DISTINCT c.id) / COUNT(DISTINCT v.id),
-                2
-              ) AS communication_coverage_pct
-            FROM patients_ervisit v
-            LEFT JOIN patients_communicationevent c USING (id)
-            GROUP BY v.er_section;
-        """)
-        response["communication_coverage_by_er_section"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            WITH first_comm AS (
-              SELECT id, MIN(event_ts) AS first_comm_ts
-              FROM patients_communicationevent
-              GROUP BY id
-            )
-            SELECT
-              DATE(v.arrival_ts) AS day,
-              ROUND(AVG(EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts))/60),2)
-                AS avg_minutes
-            FROM patients_ervisit v
-            JOIN first_comm fc USING (id)
-            GROUP BY day
-            ORDER BY day;
-        """)
-        response["first_communication_trend"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            SELECT
-              v.length_of_stay,
-              s.overall_score
-            FROM patients_ervisit v
-            JOIN patients_satisfactionsignal s USING (id);
-        """)
-        response["los_vs_satisfaction"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            SELECT
-              CASE
-                WHEN EXTRACT(EPOCH FROM e.time_to_first_contact) / 60 <= 15 THEN '0-15'
-                WHEN EXTRACT(EPOCH FROM e.time_to_first_contact) / 60 <= 30 THEN '16-30'
-                WHEN EXTRACT(EPOCH FROM e.time_to_first_contact) / 60 <= 60 THEN '31-60'
-                ELSE '60+'
-              END AS wait_bucket,
-              ROUND(AVG(s.overall_score), 2) AS avg_satisfaction
-            FROM patients_experiencefailureindicator e
-            JOIN patients_satisfactionsignal s USING (id)
-            GROUP BY wait_bucket
-            ORDER BY wait_bucket;
-        """)
-        response["first_contact_delay_impact"] = dictfetchall(cursor)
-
-        cursor.execute("""
-            SELECT
-              v.er_section,
-              ROUND(
-                100.0 * COUNT(*) FILTER (WHERE e.lwbs) / COUNT(*),
-                2
+                  COUNT(CASE WHEN disposition_type = 'lwbs' THEN 1 END)::numeric 
+                  / COUNT(*) * 100,
+                  1
               ) AS lwbs_rate_pct
-            FROM patients_ervisit v
-            JOIN patients_experiencefailureindicator e USING (id)
-            GROUP BY v.er_section;
-        """)
-        response["lwbs_by_er_section"] = dictfetchall(cursor)
+          FROM patients_ervisit
+          GROUP BY er_section
+          ORDER BY lwbs_rate_pct DESC;
+      """)
+      response["lwbs_rate"] = dictfetchone(cursor)
 
-        cursor.execute("""
-            WITH comm_flag AS (
-              SELECT DISTINCT id FROM patients_communicationevent
-            )
-            SELECT
-              CASE
-                WHEN c.id IS NULL THEN 'No Communication'
-                ELSE 'Communication'
-              END AS communication_status,
-              ROUND(
-                100.0 * COUNT(*) FILTER (WHERE v.revisit_72h) / COUNT(*),
-                2
-              ) AS revisit_rate
-            FROM patients_ervisit v
-            LEFT JOIN comm_flag c USING (id)
-            GROUP BY communication_status;
-        """)
-        response["revisit_vs_communication"] = dictfetchall(cursor)
 
-        cursor.execute("""
+      # 72h revisit rate
+      cursor.execute("""
+          SELECT
+            ROUND(
+              100.0 * COUNT(*) FILTER (WHERE revisit_72h = TRUE)
+              / NULLIF(COUNT(*) FILTER (WHERE disposition_ts IS NOT NULL), 0),
+              0
+            ) AS revisit_rate_pct
+          FROM patients_ervisit;
+      """)
+      response["revisit_rate"] = dictfetchone(cursor)
+
+
+      # High dissatisfaction risk %
+      cursor.execute("""
+          WITH visit_risk AS (
             SELECT
-              v.er_section,
-              ROUND(
-                AVG(
-                  CASE
-                    WHEN e.time_to_first_contact > INTERVAL '60 minutes'
-                      OR e.time_without_communication > INTERVAL '60 minutes'
-                    THEN 1 ELSE 0
+              v.id,
+              (
+                0.35 * LEAST(
+                  GREATEST(
+                    (EXTRACT(EPOCH FROM e.time_to_first_contact) / 60 - 15) / 30 * 100,
+                    0
+                  ),
+                  100
+                )
+                + 0.25 * CASE
+                    WHEN e.time_without_communication IS NULL
+                        OR EXTRACT(EPOCH FROM e.time_without_communication) / 60 > 30
+                    THEN 100 ELSE 0
                   END
-                ) * 100,
-                2
+                + 0.25 * CASE WHEN e.lwbs THEN 100 ELSE 0 END
+                + 0.15 * CASE WHEN v.revisit_72h THEN 100 ELSE 0 END
               ) AS risk_score
             FROM patients_ervisit v
-            JOIN patients_experiencefailureindicator e USING (id)
-            GROUP BY v.er_section;
-        """)
-        response["risk_by_er_section"] = dictfetchall(cursor)
+            JOIN patients_experiencefailureindicator e
+              ON e.visit_id = v.id
+          )
+          SELECT
+            ROUND(
+              100.0 * COUNT(*) FILTER (WHERE risk_score >= 70)
+              / NULLIF(COUNT(*), 0),
+              0
+            ) AS high_risk_visit_pct
+          FROM visit_risk;
+      """)
+      response["high_risk_pct"] = dictfetchone(cursor)
+
+
+
+
+      # ----------------------------------------
+      
+      
+      
+      # Arrival → First contact trend
+      cursor.execute("""
+        SELECT
+            er_section,
+            ROUND(
+                AVG(EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts))/60),
+                2
+            ) AS avg_minutes
+        FROM patients_ervisit
+        WHERE first_contact_ts IS NOT NULL
+        GROUP BY er_section
+        ORDER BY er_section;
+      """)
+      response["arrival_to_first_contact_trend"] = dictfetchall(cursor)
+
+
+      # Waiting time by triage
+      cursor.execute("""
+          SELECT
+              triage_level,
+              ROUND(
+                  EXTRACT(EPOCH FROM (first_contact_ts - arrival_ts)) / 60,
+                  2
+              ) AS wait_minutes
+          FROM patients_ervisit
+          WHERE triage_level IS NOT NULL
+            AND first_contact_ts IS NOT NULL
+          ORDER BY triage_level;
+      """)
+      response["waiting_time_by_triage"] = dictfetchall(cursor)
+
+
+      # Communication coverage by ER section
+      cursor.execute("""
+          SELECT
+              v.er_section,
+              ROUND(
+                  100.0 * COUNT(DISTINCT c.visit_id) / NULLIF(COUNT(DISTINCT v.id),0),
+                  2
+              ) AS coverage_pct
+          FROM patients_ervisit v
+          LEFT JOIN patients_communicationevent c
+            ON c.visit_id = v.id
+          GROUP BY v.er_section
+          ORDER BY v.er_section;
+
+      """)
+      response["communication_coverage_by_er_section"] = dictfetchall(cursor)
+
+
+      # First communication trend
+      cursor.execute("""
+        WITH first_comm AS (
+            SELECT
+                visit_id,
+                MIN(event_ts) AS first_comm_ts
+            FROM patients_communicationevent
+            GROUP BY visit_id
+        )
+        SELECT
+            DATE(v.arrival_ts) AS day,
+            ROUND(
+                AVG(EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts)) / 60),
+                2
+            ) AS avg_minutes
+        FROM patients_ervisit v
+        JOIN first_comm fc ON fc.visit_id = v.id
+        GROUP BY DATE(v.arrival_ts)
+        ORDER BY day DESC
+        LIMIT 4;
+      """)
+      response["first_communication_trend"] = dictfetchall(cursor)
+
+
+      # LOS vs satisfaction
+      cursor.execute("""
+        SELECT
+          CASE
+            WHEN EXTRACT(EPOCH FROM v.length_of_stay)/60 <= 30 THEN 30
+            WHEN EXTRACT(EPOCH FROM v.length_of_stay)/60 <= 60 THEN 60
+            WHEN EXTRACT(EPOCH FROM v.length_of_stay)/60 <= 90 THEN 90
+            WHEN EXTRACT(EPOCH FROM v.length_of_stay)/60 <= 120 THEN 120
+            WHEN EXTRACT(EPOCH FROM v.length_of_stay)/60 <= 180 THEN 180
+            ELSE 240
+          END AS los_bucket_minutes,
+          ROUND(AVG(s.overall_score)*20, 2) AS avg_satisfaction_pct
+        FROM patients_ervisit v
+        JOIN patients_satisfactionsignal s ON s.visit_id = v.id
+        WHERE v.length_of_stay IS NOT NULL
+          AND s.overall_score IS NOT NULL
+        GROUP BY los_bucket_minutes
+        ORDER BY los_bucket_minutes;
+
+      """)
+      response["los_vs_satisfaction"] = dictfetchall(cursor)
+
+
+      # First contact delay impact
+      cursor.execute("""
+        SELECT
+          CASE
+            WHEN EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts))/60 <= 5 THEN '0-5 min'
+            WHEN EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts))/60 <= 10 THEN '5-10 min'
+            WHEN EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts))/60 <= 15 THEN '10-15 min'
+            WHEN EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts))/60 <= 30 THEN '15-30 min'
+            ELSE '30+ min'
+          END AS delay_bucket,
+          ROUND(AVG(s.overall_score)*20, 2) AS avg_satisfaction_pct
+        FROM patients_ervisit v
+        JOIN patients_satisfactionsignal s ON s.visit_id = v.id
+        WHERE v.first_contact_ts IS NOT NULL
+          AND v.arrival_ts IS NOT NULL
+          AND s.overall_score IS NOT NULL
+        GROUP BY delay_bucket
+        ORDER BY MIN(EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts)));
+
+      """)
+      response["first_contact_delay_impact"] = dictfetchall(cursor)
+
+
+      # LWBS by ER section
+      cursor.execute("""
+          SELECT
+              v.er_section,
+              ROUND(
+                100.0 * COUNT(*) FILTER (WHERE e.lwbs = TRUE) / NULLIF(COUNT(*),0),
+                2
+              ) AS lwbs_rate_pct
+          FROM patients_ervisit v
+          JOIN patients_experiencefailureindicator e ON e.visit_id = v.id
+          GROUP BY v.er_section
+          ORDER BY lwbs_rate_pct DESC;
+
+
+          -- 8️⃣ Revisit Rate vs Communication
+          WITH comm_flag AS (
+              SELECT DISTINCT visit_id
+              FROM patients_communicationevent
+          )
+          SELECT
+              CASE WHEN c.visit_id IS NULL THEN 'No Communication'
+                  ELSE 'Communication Provided'
+              END AS communication_status,
+              ROUND(
+                100.0 * COUNT(*) FILTER (WHERE v.revisit_72h = TRUE) / NULLIF(COUNT(*),0),
+                2
+              ) AS revisit_rate_pct
+          FROM patients_ervisit v
+          LEFT JOIN comm_flag c ON c.visit_id = v.id
+          GROUP BY communication_status
+          ORDER BY communication_status;
+
+      """)
+      response["lwbs_by_er_section"] = dictfetchall(cursor)
+
+
+      # Revisit vs communication
+      cursor.execute("""
+          WITH comm_flag AS (
+            SELECT DISTINCT visit_id
+            FROM patients_communicationevent
+          )
+          SELECT
+            CASE
+              WHEN c.visit_id IS NULL THEN 'No Communication'
+              ELSE 'Communication Provided'
+            END AS communication_status,
+
+            ROUND(
+              100.0 * COUNT(*) FILTER (WHERE v.revisit_72h = TRUE) / COUNT(*),
+              2
+            ) AS revisit_rate_pct
+          FROM patients_ervisit v
+          LEFT JOIN comm_flag c
+            ON c.visit_id = v.id
+          GROUP BY communication_status
+          ORDER BY communication_status;
+
+      """)
+      response["revisit_vs_communication"] = dictfetchall(cursor)
+
+
+      # Satisfaction by Shift & Pressure Level
+      cursor.execute("""
+          SELECT
+              v.shift AS shift,
+              cd.er_capacity_level AS pressure_level,
+              ROUND(AVG(s.overall_score) * 20, 2) AS avg_satisfaction_pct
+          FROM (
+              SELECT
+                  v.*,
+                  CASE
+                      WHEN EXTRACT(HOUR FROM v.arrival_ts) BETWEEN 7 AND 14 THEN 'Morning'
+                      WHEN EXTRACT(HOUR FROM v.arrival_ts) BETWEEN 15 AND 22 THEN 'Afternoon'
+                      ELSE 'Night'
+                  END AS shift
+              FROM patients_ervisit v
+          ) v
+          JOIN patients_satisfactionsignal s ON s.visit_id = v.id
+          JOIN patients_contextdata cd
+              ON cd.date = DATE(v.arrival_ts)
+            AND cd.er_section = v.er_section
+            AND (
+                  (cd.shift = 'day' AND v.shift = 'Morning')
+                  OR (cd.shift = 'evening' AND v.shift = 'Afternoon')
+                  OR (cd.shift = 'night' AND v.shift = 'Night')
+            )
+          GROUP BY v.shift, cd.er_capacity_level
+          ORDER BY 
+              CASE v.shift
+                  WHEN 'Morning' THEN 1
+                  WHEN 'Afternoon' THEN 2
+                  ELSE 3
+              END,
+              cd.er_capacity_level;
+      """) 
+      response["satisfaction_by_shift"] = dictfetchall(cursor)
+      
+      # Dissatisfaction risk by ER section
+      cursor.execute("""
+        WITH section_metrics AS (
+            SELECT
+                v.er_section,
+                AVG(EXTRACT(EPOCH FROM (v.first_contact_ts - v.arrival_ts)) / 60)
+                    FILTER (WHERE v.first_contact_ts IS NOT NULL) AS avg_first_contact_min,
+                AVG(
+                    CASE
+                        WHEN e.time_without_communication IS NULL THEN 0
+                        WHEN EXTRACT(EPOCH FROM e.time_without_communication)/60 > 30 THEN 1
+                        ELSE 0
+                    END
+                ) * 100 AS comm_failure_pct,
+                AVG(CASE WHEN e.lwbs THEN 1 ELSE 0 END) * 100 AS lwbs_pct,
+                AVG(CASE WHEN v.revisit_72h THEN 1 ELSE 0 END) * 100 AS revisit_pct
+            FROM patients_ervisit v
+            LEFT JOIN patients_experiencefailureindicator e ON e.visit_id = v.id
+            GROUP BY v.er_section
+        )
+        SELECT
+            er_section AS section,
+            ROUND(
+                0.35 * LEAST(GREATEST((avg_first_contact_min - 15)/30*100, 0), 100)
+              + 0.25 * comm_failure_pct
+              + 0.25 * lwbs_pct
+              + 0.15 * revisit_pct,
+              0
+            ) AS risk_score
+        FROM section_metrics
+        ORDER BY risk_score DESC;
+
+      """)
+      response["risk_by_er_section"] = dictfetchall(cursor)
 
     return Response(response)

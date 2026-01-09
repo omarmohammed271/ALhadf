@@ -8,5 +8,3 @@ export const useERDashboard = () =>
     staleTime: 60_000, // 1 min
     refetchInterval: 60_000, // live dashboard
   });
-
-  

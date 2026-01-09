@@ -10,7 +10,7 @@ import ArrivalToFirstContactDialogAR from "@/components/ChartDetailsDialogs/ER/A
 type Granularity = "daily" | "weekly";
 
 type TrendPoint = {
-  date: string;
+  section: string;
   avgMinutes: number;
 };
 
@@ -60,7 +60,7 @@ export default function ArrivalToFirstContactTrend({
     grid: { left: "5%", right: "5%", top: "15%", bottom: "2%" },
     xAxis: {
       type: "category",
-      data: data.map((d) => d.date),
+      data: data.map((d) => d.section),
       axisLabel: {
         color: textColor,
         fontSize: 10 * textScalar,
