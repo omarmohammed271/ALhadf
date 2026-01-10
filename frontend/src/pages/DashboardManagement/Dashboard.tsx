@@ -124,9 +124,16 @@ export default function ERDashboard() {
         {/* Upper */}
         <div className=" flex flex-col space-y-2 col-span-1">
           <ArrivalToFirstContactTrend
-            data={transformed?.arrivalToFirstContactTrend.slice(0, 5)}
+            data={(transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? []) as {
+              section: string;
+              avgMinutes: number;
+            }[]}
             granularity="daily"
             threshold={20}
+            critical={
+              (transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? [])
+                .filter(d => d.avgMinutes > 20).length >= 2
+            }
           />
 
           <WaitingTimeByTriage
@@ -135,8 +142,17 @@ export default function ERDashboard() {
               minutes: (minutesArray as number[]).slice(0, 5),
             }))}
             threshold={30}
-            critical={false}
+            critical={
+              Object.entries(transformed?.waitingTimeByTriage ?? [])
+                .map(([_, minutesArray]) => {
+                  const slice = (minutesArray as number[]).slice(0, 5);
+                  const avg = slice.reduce((a, b) => a + b, 0) / slice.length;
+                  return avg;
+                })
+                .filter(avg => avg > 30).length >= 2
+            }
           />
+
         {/* <ArrivalToFirstContactTrend
             data={[
               { section: "Main ER", avgMinutes: 18 },
@@ -164,15 +180,20 @@ export default function ERDashboard() {
             sections={transformed?.communicationCoverage.map((d: any) => d.section)}
             coverage={transformed?.communicationCoverage.map((d: any) => d.coveragePct)}
             threshold={85}
-            critical={false}
+            critical={
+              transformed?.communicationCoverage.filter((d: any) => d.coveragePct < 85).length >= 2
+            }
           />
 
           <TimeToFirstCommunicationLine
             sections={transformed?.firstCommunicationTrend.map((d: any) => d.section)}
             avgMinutes={transformed?.firstCommunicationTrend.map((d: any) => d.avgMinutes)}
             threshold={15}
-            critical={false}
+            critical={
+              transformed?.firstCommunicationTrend.filter((d: any) => d.avgMinutes > 15).length >= 2
+            }
           />
+
           {/* <CommunicationCoverageBar
             sections={
               i18n.language === "en"
@@ -200,15 +221,21 @@ export default function ERDashboard() {
             lengthsOfStay={transformed?.losVsSatisfaction.map((d: any) => d.losBucketMinutes)}
             satisfactionScores={transformed?.losVsSatisfaction.map((d: any) => d.avgSatisfactionPct)}
             threshold={70}
-            critical={false}
+            critical={
+              transformed?.losVsSatisfaction.filter((d: any) => d.avgSatisfactionPct < 70).length >= 2
+            }
           />
+
 
           <FirstContactDelayLine
             buckets={transformed?.firstContactDelay.map((d: any) => d.bucket)}
             avgSatisfaction={transformed?.firstContactDelay.map((d: any) => d.avgSatisfaction)}
             threshold={10}
-            critical={false}
+            critical={
+              transformed?.firstContactDelay.filter((d: any) => d.avgSatisfaction < 10).length >= 2
+            }
           />
+
           {/* <LOSvsSatisfaction
             lengthsOfStay={[30, 45, 60, 75, 90, 120]}
             satisfactionScores={[95, 90, 85, 70, 60, 50]}
@@ -230,24 +257,29 @@ export default function ERDashboard() {
               )
             }
             lwbsRates={
-              (transformed?.lwbsBySection ?? []).map(
-                (d: any) => Number(d.lwbsRatePct)
-              )
+              (transformed?.lwbsBySection ?? []).map((d: any) => Number(d.lwbsRatePct))
             }
             threshold={5}
-            critical={false}
+            critical={
+              (transformed?.lwbsBySection ?? []).filter((d: any) => Number(d.lwbsRatePct) > 5).length >= 2
+            }
           />
 
-        <RevisitVsCommunicationBar
-          categories={
-            i18n.language === "en"
-              ? transformed?.revisitVsCommunication.map((d: any) => d.communicationStatus)
-              : ["تم التواصل", "لم يتم التواصل"] // map similarly if Arabic labels exist in data
-          }
-          revisitRates={transformed?.revisitVsCommunication.map((d: any) => d.revisitRatePct)}
-          threshold={12}
-          critical={false}
-        />
+          <RevisitVsCommunicationBar
+            categories={
+              i18n.language === "en"
+                ? transformed?.revisitVsCommunication.map((d: any) => d.communicationStatus)
+                : ["تم التواصل", "لم يتم التواصل"] // map similarly if Arabic labels exist in data
+            }
+            revisitRates={transformed?.revisitVsCommunication.map((d: any) => d.revisitRatePct)}
+            threshold={12}
+            critical={
+              (transformed?.revisitVsCommunication ?? []).filter(
+                (d: any) => d.revisitRatePct > 12
+              ).length >= 2
+            }
+          />
+
           {/* <LWBSRateBar
             sections={
               i18n.language === "en"

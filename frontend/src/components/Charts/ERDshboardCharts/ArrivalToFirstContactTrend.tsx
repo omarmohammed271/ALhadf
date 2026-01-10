@@ -18,12 +18,14 @@ type Props = {
   data: TrendPoint[];
   granularity: Granularity;
   threshold?: number;
+  critical: boolean;
 };
 
 export default function ArrivalToFirstContactTrend({
   data = [],
   granularity,
   threshold,
+  critical
 }: Props) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -130,13 +132,7 @@ export default function ArrivalToFirstContactTrend({
   }, []);
 
   return (
-    <div
-      className={`w-full p-5 card-style relative ${
-        threshold && data.filter(d => d.avgMinutes > threshold).length >= 2
-          ? "bg-red-700/7"
-          : ""
-      }`}
-    >
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
 
       {/* Details Dialog */}
       {i18n.language === "en" ? (
