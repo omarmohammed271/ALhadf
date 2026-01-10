@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 
-export const baseURL = `127.0.0.1:8000`
+export const baseURL = `87.237.225.79:8000`
 
 export const axiosInstance = axios.create({
   baseURL: `http://${baseURL}/`,
