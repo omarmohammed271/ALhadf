@@ -29,20 +29,10 @@ class AlertViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """
         Create alert and assign to specified users or all users.
-        Expects user_ids as list in request.data['user_ids[]'].
         """
         
         data = request.data.copy()
-        user_ids = data.get('user_ids[]') or data.get('user_ids') 
-        # Validate user_ids are integers
-        try:
-            user_ids = [int(uid) for uid in user_ids if uid]
-        except (ValueError, TypeError):
-            return Response(
-                {'error': 'user_ids must be a list of integers'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+        user_id = data.get('user_ids[]') or data.get('user_ids') 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -50,22 +40,18 @@ class AlertViewSet(viewsets.ModelViewSet):
             # Save alert
             alert = serializer.save(triggered_by=request.user.username)
             
+            print("WOW")
             # Get users
-            if user_ids:
-                users = User.objects.filter(id__in=user_ids)
-                if users.count() != len(user_ids):
-                    return Response(
-                        {'error': 'Some user_ids do not exist'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+            if user_id:
+                user = User.objects.get(id=user_id)
+                UserAlert.objects.create(user=user, alert=alert)
             else:
                 users = User.objects.all()
-            # Bulk create user alerts
-            user_alerts = [
-                UserAlert(user=user, alert=alert)
-                for user in users
-            ]
-            UserAlert.objects.bulk_create(user_alerts, ignore_conflicts=True)
+                user_alerts = [
+                    UserAlert(user=user, alert=alert)
+                    for user in users if users.count() > 1
+                ]
+                UserAlert.objects.bulk_create(user_alerts, ignore_conflicts=True)
 
         return Response(
             self.get_serializer(alert).data,

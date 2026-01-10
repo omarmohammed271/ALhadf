@@ -88,9 +88,7 @@ export default function UserManagement() {
     mutationFn: handleCreateAlert,
     onSuccess: () => {
       toast.success(
-        `Alert sent successfully to ${
-          selectedUser?.profile?.first_name || "all users"
-        }`
+        `Alert sent successfully`
       );
 
       setOpen(false);
@@ -134,6 +132,15 @@ export default function UserManagement() {
       toast.error("Metadata must be valid JSON");
       return;
     }
+
+    console.log({
+      title,
+      description,
+      level,
+      metadata: parsedMetadata,
+      user_ids: selectedUser ? [selectedUser.id] : "",
+    });
+    
 
     mutation.mutate({
       title,
@@ -200,7 +207,7 @@ export default function UserManagement() {
                   <TableRow className="*:px-5 border-border" key={user.id}>
                     <TableCell>{user.first_name ?? "-"}</TableCell>
                     <TableCell>{user.last_name ?? "-"}</TableCell>
-                    <TableCell>{user.username ?? "-"}</TableCell>
+                    <TableCell>{user.username ?? "-"} - {user.id ?? "-"}</TableCell>
                     <TableCell>{user.email ?? "-"}</TableCell>
                     <TableCell>{user.profile?.phone_number ?? "-"}</TableCell>
                     <TableCell>{user.profile?.position ?? "-"}</TableCell>

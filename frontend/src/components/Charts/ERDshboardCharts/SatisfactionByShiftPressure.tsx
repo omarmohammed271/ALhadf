@@ -25,6 +25,12 @@ export default function SatisfactionByShiftPressure({ data }: SatisfactionByShif
   const { t, i18n } = useTranslation();
   const { textScalar, iScalar } = useResponsiveScalars();
 
+  const getSatisfactionColor = (value: number) => {
+    if (value < 50) return '#ef4444';   // red
+    if (value < 80) return '#f59e0b';   // amber
+    return '#22c55e';                   // green
+  };
+
   // unique shifts and pressure levels for axes
   const shifts = Array.from(new Set(data.map(d => d.shift)));
   const pressures = Array.from(new Set(data.map(d => d.pressureLevel)));
@@ -57,18 +63,18 @@ export default function SatisfactionByShiftPressure({ data }: SatisfactionByShif
     series: [
       {
         type: 'scatter',
-        symbolSize: (val: any) => Math.max(val[2] / 2, 6 * textScalar), // scale for visibility
+        symbolSize: (val: any) => Math.max(val[2] / 2, 6 * textScalar),
         data: data.map(d => [d.shift, d.pressureLevel, d.satisfaction]),
         itemStyle: {
-          color: 'var(--chart-1)',
-          borderColor: 'var(--chart-1)',
+          color: (params: any) => getSatisfactionColor(params.value[2]),
+          borderColor: '#FFFFFF00',
           borderWidth: 1,
         },
         emphasis: {
           focus: 'series',
           itemStyle: {
-            color: 'var(--chart-2)', // hover color
-            borderColor: '#ffffff',
+            color: (params: any) => getSatisfactionColor(params.value[2]),
+            borderColor: '#FFFFFF00',
             borderWidth: 1.5,
           },
         },
@@ -80,6 +86,7 @@ export default function SatisfactionByShiftPressure({ data }: SatisfactionByShif
         },
       },
     ],
+    
     grid: { left: '2%', right: '10%', top: '18%', bottom: '5%', containLabel: true },
   };
 
