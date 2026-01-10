@@ -293,19 +293,22 @@ def er_dashboard_api(request):
                 visit_id,
                 MIN(event_ts) AS first_comm_ts
             FROM patients_communicationevent
+            WHERE event_type = 'initial'
             GROUP BY visit_id
         )
         SELECT
-            DATE(v.arrival_ts) AS day,
+            v.er_section,
             ROUND(
-                AVG(EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts)) / 60),
+                AVG(
+                    GREATEST(EXTRACT(EPOCH FROM (fc.first_comm_ts - v.arrival_ts)) / 60, 0)
+                ),
                 2
-            ) AS avg_minutes
+            ) AS avg_minutes_to_first_contact
         FROM patients_ervisit v
-        JOIN first_comm fc ON fc.visit_id = v.id
-        GROUP BY DATE(v.arrival_ts)
-        ORDER BY day DESC
-        LIMIT 4;
+        LEFT JOIN first_comm fc ON fc.visit_id = v.id
+        GROUP BY v.er_section
+        ORDER BY avg_minutes_to_first_contact DESC NULLS LAST;
+
       """)
       response["first_communication_trend"] = dictfetchall(cursor)
 
@@ -359,34 +362,15 @@ def er_dashboard_api(request):
       # LWBS by ER section
       cursor.execute("""
           SELECT
-              v.er_section,
+              er_section,
               ROUND(
-                100.0 * COUNT(*) FILTER (WHERE e.lwbs = TRUE) / NULLIF(COUNT(*),0),
-                2
-              ) AS lwbs_rate_pct
-          FROM patients_ervisit v
-          JOIN patients_experiencefailureindicator e ON e.visit_id = v.id
-          GROUP BY v.er_section
-          ORDER BY lwbs_rate_pct DESC;
-
-
-          -- 8️⃣ Revisit Rate vs Communication
-          WITH comm_flag AS (
-              SELECT DISTINCT visit_id
-              FROM patients_communicationevent
-          )
-          SELECT
-              CASE WHEN c.visit_id IS NULL THEN 'No Communication'
-                  ELSE 'Communication Provided'
-              END AS communication_status,
-              ROUND(
-                100.0 * COUNT(*) FILTER (WHERE v.revisit_72h = TRUE) / NULLIF(COUNT(*),0),
-                2
-              ) AS revisit_rate_pct
-          FROM patients_ervisit v
-          LEFT JOIN comm_flag c ON c.visit_id = v.id
-          GROUP BY communication_status
-          ORDER BY communication_status;
+                  100.0 * SUM(CASE WHEN disposition_type = 'lwbs' THEN 1 ELSE 0 END)
+                  / NULLIF(COUNT(*), 0),
+                  1
+              ) AS lwbs_rate
+          FROM patients_ervisit
+          GROUP BY er_section
+          ORDER BY lwbs_rate DESC;
 
       """)
       response["lwbs_by_er_section"] = dictfetchall(cursor)
@@ -420,11 +404,22 @@ def er_dashboard_api(request):
 
       # Satisfaction by Shift & Pressure Level
       cursor.execute("""
+          WITH shifts AS (
+              SELECT unnest(ARRAY['Morning','Afternoon','Night']) AS shift
+          ),
+          pressure_levels AS (
+              SELECT unnest(ARRAY['low','medium','high']) AS pressure_level
+          ),
+          matrix AS (
+              SELECT s.shift, p.pressure_level
+              FROM shifts s CROSS JOIN pressure_levels p
+          )
           SELECT
-              v.shift AS shift,
-              cd.er_capacity_level AS pressure_level,
+              m.shift,
+              m.pressure_level,
               ROUND(AVG(s.overall_score) * 20, 2) AS avg_satisfaction_pct
-          FROM (
+          FROM matrix m
+          LEFT JOIN (
               SELECT
                   v.*,
                   CASE
@@ -433,24 +428,25 @@ def er_dashboard_api(request):
                       ELSE 'Night'
                   END AS shift
               FROM patients_ervisit v
-          ) v
-          JOIN patients_satisfactionsignal s ON s.visit_id = v.id
-          JOIN patients_contextdata cd
-              ON cd.date = DATE(v.arrival_ts)
-            AND cd.er_section = v.er_section
-            AND (
-                  (cd.shift = 'day' AND v.shift = 'Morning')
-                  OR (cd.shift = 'evening' AND v.shift = 'Afternoon')
-                  OR (cd.shift = 'night' AND v.shift = 'Night')
-            )
-          GROUP BY v.shift, cd.er_capacity_level
-          ORDER BY 
-              CASE v.shift
+          ) v ON v.shift = m.shift
+          LEFT JOIN patients_contextdata cd
+                ON cd.date = DATE(v.arrival_ts)
+                AND cd.er_section = v.er_section
+                AND (
+                      (cd.shift = 'day' AND v.shift = 'Morning')
+                      OR (cd.shift = 'evening' AND v.shift = 'Afternoon')
+                      OR (cd.shift = 'night' AND v.shift = 'Night')
+                )
+          LEFT JOIN patients_satisfactionsignal s ON s.visit_id = v.id
+          GROUP BY m.shift, m.pressure_level
+          ORDER BY
+              CASE m.shift
                   WHEN 'Morning' THEN 1
                   WHEN 'Afternoon' THEN 2
                   ELSE 3
               END,
-              cd.er_capacity_level;
+              m.pressure_level;
+
       """) 
       response["satisfaction_by_shift"] = dictfetchall(cursor)
       

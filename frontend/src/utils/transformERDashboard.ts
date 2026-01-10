@@ -27,7 +27,10 @@ export const transformERDashboard = (data: any) => {
       .map((d: any) => ({ section: d.er_section, coveragePct: +d.coverage_pct?.toFixed(0) })),
 
     firstCommunicationTrend: data.first_communication_trend
-      .map((d: any) => ({ date: d.day, avgMinutes: +d.avg_minutes?.toFixed(1) })),
+      .map((d: any) => ({
+        section: d.er_section,
+        avgMinutes: +d.avg_minutes_to_first_contact?.toFixed(1),
+      })),
 
     losVsSatisfaction: data.los_vs_satisfaction
       .map((d: any) => ({
@@ -41,10 +44,9 @@ export const transformERDashboard = (data: any) => {
         avgSatisfaction: +d.avg_satisfaction_pct?.toFixed(0),
       })),
 
-    lwbsBySection: data.lwbs_by_er_section
-      .map((d: any) => ({
-        section: d.er_section,              // ER section name
-        lwbsRatePct: +d.lwbs_rate_pct?.toFixed(1),  // LWBS % rounded
+      lwbsBySection: data.lwbs_by_er_section.map((d: any) => ({
+        section: d.er_section,
+        lwbsRatePct: d.lwbs_rate,
       })),
 
     revisitVsCommunication: data.revisit_vs_communication

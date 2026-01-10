@@ -4,7 +4,7 @@ import { useResponsiveScalars } from '@/hooks/useResponsiveScalars';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const TimeToFirstCommunicationLineDialogAR: React.FC<{ dates: string[], avgMinutes: number[], threshold: number }> = ({ dates, avgMinutes, threshold }) => {
+const TimeToFirstCommunicationLineDialogAR: React.FC<{ sections: string[], avgMinutes: number[], threshold: number }> = ({ sections, avgMinutes, threshold }) => {
   const { t } = useTranslation();
   const { textScalar } = useResponsiveScalars();
 
@@ -61,7 +61,7 @@ const TimeToFirstCommunicationLineDialogAR: React.FC<{ dates: string[], avgMinut
               </tr>
             </thead>
             <tbody>
-              {dates.map((date, i) => (
+              {sections.map((date, i) => (
                 <tr key={date}>
                   <td className="border p-2">{date}</td>
                   <td 

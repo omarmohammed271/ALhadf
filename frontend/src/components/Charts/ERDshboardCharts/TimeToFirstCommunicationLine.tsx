@@ -8,13 +8,13 @@ import TimeToFirstCommunicationLineDialogEN from "@/components/ChartDetailsDialo
 import TimeToFirstCommunicationLineDialogAR from "@/components/ChartDetailsDialogs/ER/TimeToFirstCommunicationLineDialogs/ar/TimeToFirstCommunicationLineDialogAR";
 
 interface TimeToFirstCommunicationLineProps {
-  dates: string[];
+  sections: string[];
   avgMinutes: number[];
   threshold: number;
 }
 
 export default function TimeToFirstCommunicationLine({
-  dates,
+  sections,
   avgMinutes,
   threshold,
 }: TimeToFirstCommunicationLineProps) {
@@ -43,7 +43,7 @@ export default function TimeToFirstCommunicationLine({
     },
     xAxis: {
       type: "category",
-      data: dates,
+      data: sections,
       axisLabel: {
         color: textColor,
         fontSize: 10 * textScalar,
@@ -119,13 +119,13 @@ export default function TimeToFirstCommunicationLine({
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <TimeToFirstCommunicationLineDialogEN
-          dates={dates}
+          sections={sections}
           avgMinutes={avgMinutes}
           threshold={threshold}
         />
       ) : (
         <TimeToFirstCommunicationLineDialogAR
-          dates={dates}
+          sections={sections}
           avgMinutes={avgMinutes}
           threshold={threshold}
         />

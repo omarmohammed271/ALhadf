@@ -23,6 +23,26 @@ export default function ERDashboard() {
   console.log(dashboardData);
   const transformed = dashboardData ? transformERDashboard(dashboardData) : null;
   console.log(transformed);
+
+  type Language = "en" | "ar";
+  type ERSection = "main" | "fasttrack" | "triage" | "trauma";
+
+
+  const lang = i18n.language === "ar" ? "ar" : "en";
+  const sectionLabelMap: Record<Language, Record<ERSection, string>> = {
+    en: {
+      main: "Main ER",
+      fasttrack: "Fast Track",
+      triage: "Triage",
+      trauma: "Resuscitation",
+    },
+    ar: {
+      main: "الطوارئ الرئيسية",
+      fasttrack: "المسار السريع",
+      triage: "الفرز",
+      trauma: "الإنعاش",
+    },
+  };
   
   type DashboardData = typeof transformed
   if (isPending) {
@@ -146,7 +166,7 @@ export default function ERDashboard() {
           />
 
           <TimeToFirstCommunicationLine
-            dates={transformed?.firstCommunicationTrend.map((d: any) => d.date)}
+            sections={transformed?.firstCommunicationTrend.map((d: any) => d.section)}
             avgMinutes={transformed?.firstCommunicationTrend.map((d: any) => d.avgMinutes)}
             threshold={15}
           />
@@ -194,15 +214,19 @@ export default function ERDashboard() {
 
 
         <div className=" flex flex-col gap-y-2 col-span-1">
-        <LWBSRateBar
-          sections={
-            i18n.language === "en"
-              ? transformed?.lwbsBySection.map((d: any) => d.communicationStatus) // section names
-              : ["الفرز", "المسار السريع", "الطوارئ الرئيسية", "الإنعاش"] // or map similarly if Arabic labels exist in data
-          }
-          lwbsRates={transformed?.lwbsBySection.map((d: any) => d.revisitRatePct)}
-          threshold={5}
-        />
+          <LWBSRateBar
+            sections={
+              (transformed?.lwbsBySection ?? []).map((d: any) =>
+                sectionLabelMap[lang][d.section as ERSection] ?? d.section
+              )
+            }
+            lwbsRates={
+              (transformed?.lwbsBySection ?? []).map(
+                (d: any) => Number(d.lwbsRatePct)
+              )
+            }
+            threshold={5}
+          />
 
         <RevisitVsCommunicationBar
           categories={
@@ -236,7 +260,21 @@ export default function ERDashboard() {
 
 
         <div className='md:flex mb-2 justify-center xl:flex-col max-xl:space-x-2 space-y-2 col-span-2 xl:col-span-1 p-2 bg-linear-to-br border-border from-primary/10 to-secondary/10 border rounded-xl '>
-          
+          <SatisfactionByShiftPressure
+            data={transformed?.satisfactionByShift.map((d: any) => ({
+              shift: d.shift,
+              pressureLevel: d.pressureLevel,
+              satisfaction: d.avgSatisfactionPct,
+            }))}
+          />
+
+          <DissatisfactionRiskBySection
+            data={transformed?.riskBySection.map((d: any) => ({
+              section: d.section,
+              riskScore: d.riskScore,
+            }))}
+          />
+
           {/* <SatisfactionByShiftPressure
             data={[
               { shift: 'Morning', pressureLevel: 'High', satisfaction: 62 },

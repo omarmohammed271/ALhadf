@@ -73,7 +73,7 @@ export default function DissatisfactionRiskBySection({ data }: DissatisfactionRi
           position: "top",
           fontSize: 9 * textScalar,
           color: textColor,
-          formatter: "{c} min", // show value above the dot
+          formatter: "{c}", // show value above the dot
         },
         emphasis: {
           focus: 'series',              // keep line visible on hover
