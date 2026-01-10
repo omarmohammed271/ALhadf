@@ -132,7 +132,7 @@ class SatisfactionSignal(models.Model):
         ]
         
     def __str__(self):
-        return f'{self.initiated_by}-{self.event_type} ({self.id})'
+        return f'{self.visit.er_section}-{self.overall_score} ({self.id})'
 
 
 class ContextData(models.Model):
