@@ -17,6 +17,11 @@ import { useERDashboard } from "@/api/endpoints/DashboardEndpoint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { transformERDashboard } from "@/utils/transformERDashboard";
 
+type TrendItem = {
+  section: string;
+  avgMinutes: number;
+};
+
 export default function ERDashboard() {
   const { t, i18n } = useTranslation();
   const {data: dashboardData, isPending} = useERDashboard()
@@ -123,18 +128,15 @@ export default function ERDashboard() {
         
         {/* Upper */}
         <div className=" flex flex-col space-y-2 col-span-1">
-          <ArrivalToFirstContactTrend
-            data={(transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? []) as {
-              section: string;
-              avgMinutes: number;
-            }[]}
-            granularity="daily"
-            threshold={20}
-            critical={
-              (transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? [])
-                .filter(d => d.avgMinutes > 20).length >= 2
-            }
-          />
+        <ArrivalToFirstContactTrend
+          data={(transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? []) as TrendItem[]}
+          granularity="daily"
+          threshold={20}
+          critical={
+            (transformed?.arrivalToFirstContactTrend.slice(0, 5) ?? [])
+              .filter((d: TrendItem) => d.avgMinutes > 20).length >= 2
+          }
+        />
 
           <WaitingTimeByTriage
             data={Object.entries(transformed?.waitingTimeByTriage).map(([level, minutesArray]) => ({
