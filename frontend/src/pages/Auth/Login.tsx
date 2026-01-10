@@ -25,7 +25,7 @@ export default function Login(){
         mutationKey: ["login"],
         mutationFn: handleLogin,
         onSuccess(data) {
-            console.log(data);
+            // console.log(data);
             toast.success("Successfully Logged In.")
             setUserData({
                 id: data.user_id,
@@ -42,7 +42,7 @@ export default function Login(){
             navigate(`/dashboard`, { replace: true });
         },
         onError(error) {
-            console.log(error);
+            // console.log(error);
             
             toast.error("Could not log in.")
         },
