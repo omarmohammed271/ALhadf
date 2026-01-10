@@ -11,12 +11,14 @@ interface LOSvsSatisfactionProps {
   lengthsOfStay: number[];      // X-axis
   satisfactionScores: number[]; // Y-axis
   threshold?: number; 
+  critical: boolean;
 }
 
 export default function LOSvsSatisfaction({
   lengthsOfStay,
   satisfactionScores,
   threshold,
+  critical
 }: LOSvsSatisfactionProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -97,7 +99,7 @@ export default function LOSvsSatisfaction({
   }, []);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <LOSvsSatisfactionDialogEN

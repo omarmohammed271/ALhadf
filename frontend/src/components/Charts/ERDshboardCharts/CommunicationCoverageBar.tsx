@@ -11,10 +11,12 @@ export default function CommunicationCoverageBar({
   sections,
   coverage,
   threshold, // always required
+  critical
 }: {
   sections: string[];
   coverage: number[];
   threshold: number;
+  critical: boolean;
 }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -100,7 +102,7 @@ export default function CommunicationCoverageBar({
   }, []);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <CommunicationCoverageDialogEN sections={sections} coverage={coverage} threshold={threshold} />

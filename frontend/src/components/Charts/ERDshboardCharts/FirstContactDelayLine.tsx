@@ -11,12 +11,14 @@ interface FirstContactDelayLineProps {
   buckets: string[];         // X-axis labels (time to first contact)
   avgSatisfaction: number[]; // Y-axis values (average satisfaction)
   threshold?: number;        // Optional horizontal threshold
+  critical: boolean;
 }
 
 export default function FirstContactDelayLine({
   buckets,
   avgSatisfaction,
   threshold,
+  critical
 }: FirstContactDelayLineProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -114,7 +116,7 @@ export default function FirstContactDelayLine({
   }, []);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {i18n.language === "en" ? (
         <FirstContactDelayLineDialogEN
           buckets={buckets}

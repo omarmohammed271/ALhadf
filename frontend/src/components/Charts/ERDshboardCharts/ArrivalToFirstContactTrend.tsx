@@ -130,7 +130,14 @@ export default function ArrivalToFirstContactTrend({
   }, []);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div
+      className={`w-full p-5 card-style relative ${
+        threshold && data.filter(d => d.avgMinutes > threshold).length >= 2
+          ? "bg-red-700/7"
+          : ""
+      }`}
+    >
+
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <ArrivalToFirstContactDialogEN

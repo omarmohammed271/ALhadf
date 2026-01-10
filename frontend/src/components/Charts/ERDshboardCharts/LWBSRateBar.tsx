@@ -11,12 +11,14 @@ interface LWBSRateBarProps {
   sections: string[];
   lwbsRates: number[];
   threshold?: number;
+  critical: boolean;
 }
 
 export default function LWBSRateBar({
   sections,
   lwbsRates,
   threshold,
+  critical
 }: LWBSRateBarProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -103,7 +105,7 @@ export default function LWBSRateBar({
   }, [textScalar, barScalar, iScalar]);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {i18n.language === "en" ? (
         <LWBSRateBarDialogEN sections={sections} lwbsRates={lwbsRates} />
       ) : (

@@ -135,6 +135,7 @@ export default function ERDashboard() {
               minutes: (minutesArray as number[]).slice(0, 5),
             }))}
             threshold={30}
+            critical={false}
           />
         {/* <ArrivalToFirstContactTrend
             data={[
@@ -163,12 +164,14 @@ export default function ERDashboard() {
             sections={transformed?.communicationCoverage.map((d: any) => d.section)}
             coverage={transformed?.communicationCoverage.map((d: any) => d.coveragePct)}
             threshold={85}
+            critical={false}
           />
 
           <TimeToFirstCommunicationLine
             sections={transformed?.firstCommunicationTrend.map((d: any) => d.section)}
             avgMinutes={transformed?.firstCommunicationTrend.map((d: any) => d.avgMinutes)}
             threshold={15}
+            critical={false}
           />
           {/* <CommunicationCoverageBar
             sections={
@@ -180,7 +183,11 @@ export default function ERDashboard() {
             threshold={85} 
           />
           <TimeToFirstCommunicationLine
-            dates={["2025-10-01", "2025-10-02", "2025-10-03", "2025-10-04"]}
+            sections={
+              i18n.language === "en"
+                ? ["Triage", "ER Room A", "ER Room B", "Observation", "ICU"]
+                : ["الفرز", "غرفة الطوارئ أ", "غرفة الطوارئ ب", "الملاحظة", "العناية المركزة"]
+            }
             avgMinutes={[12, 15, 10, 18]}
             threshold={15}
           /> */}
@@ -193,12 +200,14 @@ export default function ERDashboard() {
             lengthsOfStay={transformed?.losVsSatisfaction.map((d: any) => d.losBucketMinutes)}
             satisfactionScores={transformed?.losVsSatisfaction.map((d: any) => d.avgSatisfactionPct)}
             threshold={70}
+            critical={false}
           />
 
           <FirstContactDelayLine
             buckets={transformed?.firstContactDelay.map((d: any) => d.bucket)}
             avgSatisfaction={transformed?.firstContactDelay.map((d: any) => d.avgSatisfaction)}
             threshold={10}
+            critical={false}
           />
           {/* <LOSvsSatisfaction
             lengthsOfStay={[30, 45, 60, 75, 90, 120]}
@@ -226,6 +235,7 @@ export default function ERDashboard() {
               )
             }
             threshold={5}
+            critical={false}
           />
 
         <RevisitVsCommunicationBar
@@ -236,6 +246,7 @@ export default function ERDashboard() {
           }
           revisitRates={transformed?.revisitVsCommunication.map((d: any) => d.revisitRatePct)}
           threshold={12}
+          critical={false}
         />
           {/* <LWBSRateBar
             sections={

@@ -10,9 +10,11 @@ import WaitingTimeByTriageDialogAR from "@/components/ChartDetailsDialogs/ER/Wai
 export default function WaitingTimeByTriage({
   data,
   threshold,
+  critical
 }: {
   data: { level: string; minutes: number[] }[];
   threshold: number; // always required
+  critical: boolean;
 }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -104,7 +106,7 @@ export default function WaitingTimeByTriage({
   }, []);
 
   return (
-    <div className="flex items-center justify-center w-full p-5 card-style relative">
+    <div className={`flex items-center justify-center w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <WaitingTimeByTriageDialogEN data={data} threshold={threshold} />

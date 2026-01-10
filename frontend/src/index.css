@@ -165,7 +165,7 @@ body{
 }
 
 .card-style{
-  @apply bg-gradient-to-br border-border from-primary/10 to-secondary/10 text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm;
+  @apply bg-gradient-to-br border-border from-primary/10 to-secondary/10 text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-all;
 }
 
 

@@ -11,12 +11,14 @@ interface TimeToFirstCommunicationLineProps {
   sections: string[];
   avgMinutes: number[];
   threshold: number;
+  critical: boolean;
 }
 
 export default function TimeToFirstCommunicationLine({
   sections,
   avgMinutes,
   threshold,
+  critical
 }: TimeToFirstCommunicationLineProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -115,7 +117,7 @@ export default function TimeToFirstCommunicationLine({
   }, []);
 
   return (
-    <div className="w-full p-5 card-style relative">
+    <div className={`w-full p-5 card-style relative ` + (critical ? `bg-red-700/7` : ``)}>
       {/* Details Dialog */}
       {i18n.language === "en" ? (
         <TimeToFirstCommunicationLineDialogEN
