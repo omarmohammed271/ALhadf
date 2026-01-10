@@ -119,10 +119,10 @@ export default function Login(){
                             </div>
                         </form>
                     </div>
-                    <div className="mt-5">
+                    {/* <div className="mt-5">
                         <h1 className="max-md:text-sm text-muted-foreground"><strong>Username:</strong> demo</h1>
                         <h1 className="max-md:text-sm text-muted-foreground"><strong>Password:</strong> demo12345</h1>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

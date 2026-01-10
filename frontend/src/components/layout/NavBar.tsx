@@ -18,7 +18,7 @@ function NavBar(){
     const location = useLocation();
 
     const userData = useUserStore((state) => state.userData);
-    // console.log(userData);
+    console.log(userData);
     // console.log(localStorage.getItem('user-token'));
     
     

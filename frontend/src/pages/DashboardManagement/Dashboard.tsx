@@ -25,9 +25,7 @@ type TrendItem = {
 export default function ERDashboard() {
   const { t, i18n } = useTranslation();
   const {data: dashboardData, isPending} = useERDashboard()
-  console.log(dashboardData);
   const transformed = dashboardData ? transformERDashboard(dashboardData) : null;
-  console.log(transformed);
 
   type Language = "en" | "ar";
   type ERSection = "main" | "fasttrack" | "triage" | "trauma";

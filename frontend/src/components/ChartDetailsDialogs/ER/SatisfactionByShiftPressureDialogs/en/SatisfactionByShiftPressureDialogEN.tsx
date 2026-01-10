@@ -94,9 +94,9 @@ const SatisfactionByShiftPressureDialogEN: React.FC<SatisfactionByShiftPressureD
               {data.map((d, idx) => (
                 <tr key={idx}
                   className={
-                    d.pressureLevel == "High" ? 
+                    d.satisfaction < 50 ? 
                     `border-red-400 text-red-400`
-                    : d.pressureLevel == "Medium" ?
+                    : d.satisfaction < 80 ?
                     `border-amber-200 text-amber-200`
                     :
                     `border-green-300 text-green-300`

@@ -17,15 +17,15 @@ class ERVisitViewSet(viewsets.ModelViewSet):
     queryset = ERVisit.objects.all().order_by('-arrival_ts')
     serializer_class = ERVisitSerializer
     authentication_classes = [TokenAuthentication]
-    # permission_classes = [HasERPermission]
+    permission_classes = [HasERPermission]
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    #         self.required_permission = 'add_input'
-    #     else:
-    #         # Viewers and Admins can see the list
-    #         self.required_permission = 'view'
-    #     return super().get_permissions()
+    def get_permissions(self):
+        if self.action == 'create':
+            self.required_permission = 'add_input'
+        else:
+            # Viewers and Admins can see the list
+            self.required_permission = 'view'
+        return super().get_permissions()
 
 
 class CommunicationEventViewSet(viewsets.ModelViewSet):

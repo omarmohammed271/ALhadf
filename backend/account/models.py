@@ -29,7 +29,9 @@ class UserExtension(models.Model):
             roles__role_assignment__user=self.user
         ).values_list('name', flat=True))
 
-
+    def __str__(self):
+        return f"Extension for {self.user.username} ({self.id})"
+    
 class UserProfile(models.Model):
     Departments = [
         ('er', 'Emergency Room'),
@@ -65,6 +67,9 @@ class RolePermission(models.Model):
     class Meta:
         unique_together = ('role', 'permission')
 
+    def __str__(self):
+        return f"{self.role}-{self.permission}"
+    
 
 class UserRole(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_roles')

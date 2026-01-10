@@ -6,7 +6,7 @@ type UserData = {
     username: string;
     email: string,
     token: string;
-    role: string;
+    role: [string];
     first_name: string;
     last_name: string;
     position: string;
@@ -24,7 +24,7 @@ export const useUserStore = create(
         (set) => ({
             userData: {
                 id: "tttt",
-                role: "tttt",
+                role: ["tttt"],
                 username: "demo",
                 email: "demo@gmail.com",
                 token: "tttt",
