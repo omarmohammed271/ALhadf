@@ -10,7 +10,7 @@ services:
     networks:
       - app-network  
     ports:
-      - "3002:3002"
+      - "3000:3000"
     # Add restart policy and working directory
     restart: unless-stopped
     working_dir: /app
