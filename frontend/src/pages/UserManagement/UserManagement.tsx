@@ -54,6 +54,7 @@ export default function UserManagement() {
   const [activeTab, setActiveTab] = useState("users");
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const fullName = selectedUser?.first_name && selectedUser?.last_name ? `${selectedUser?.first_name} ${selectedUser?.last_name}` : selectedUser?.username;
 
   const { t } = useTranslation();
 
@@ -207,7 +208,8 @@ export default function UserManagement() {
                   <TableRow className="*:px-5 border-border" key={user.id}>
                     <TableCell>{user.first_name ?? "-"}</TableCell>
                     <TableCell>{user.last_name ?? "-"}</TableCell>
-                    <TableCell>{user.username ?? "-"} - {user.id ?? "-"}</TableCell>
+                    <TableCell>{user.username ?? "-"}</TableCell>
+                    {/* <TableCell>{user.username ?? "-"} - {user.id ?? "-"}</TableCell> */}
                     <TableCell>{user.email ?? "-"}</TableCell>
                     <TableCell>{user.profile?.phone_number ?? "-"}</TableCell>
                     <TableCell>{user.profile?.position ?? "-"}</TableCell>
@@ -241,7 +243,7 @@ export default function UserManagement() {
             <DialogContent className="text-foreground border-border max-w-2xl">
               <DialogHeader>
                 <DialogTitle>
-                  Notify {selectedUser?.profile?.first_name ?? "All Users"} {selectedUser?.profile?.last_name ?? ""}
+                  Notify {fullName}
                 </DialogTitle>
               </DialogHeader>
 

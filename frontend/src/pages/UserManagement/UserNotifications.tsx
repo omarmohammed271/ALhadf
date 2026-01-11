@@ -77,7 +77,7 @@ export default function UserNotifications() {
             <TableRow className="*:p-3 border-border bg-secondary/10">
               <TableHead>Title</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>To</TableHead>
+              <TableHead>From</TableHead>
               <TableHead>Level</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead>Is Read</TableHead>
@@ -107,7 +107,7 @@ export default function UserNotifications() {
                   {String(alert.alert?.description ?? "").length > 100 && "…"}
                 </TableCell>
 
-                <TableCell>{alert.user?.username ?? "-"}</TableCell>
+                <TableCell>{alert.alert?.triggered_by ?? "-"}</TableCell>
 
                 {/* Level */}
                 <TableCell>

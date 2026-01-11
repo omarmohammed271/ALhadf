@@ -66,6 +66,8 @@ export default function NotifDetails() {
       ? "secondary"
       : "default";
 
+  
+
   return (
     <Card className="flex-1 overflow-auto mx-5 md:mx-20 my-5 md:my-10 bg-muted/30">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
