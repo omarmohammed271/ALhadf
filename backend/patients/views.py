@@ -486,3 +486,6 @@ def er_dashboard_api(request):
       response["risk_by_er_section"] = dictfetchall(cursor)
 
     return Response(response)
+
+
+

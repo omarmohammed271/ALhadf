@@ -184,8 +184,8 @@ class ExperienceFailureIndicator(models.Model):
         ('planned', 'Planned Follow-up'),
     ]
 
-    visit = models.name = models.ForeignKey(ERVisit, on_delete=models.CASCADE, related_name='failure_report')
-    comm_event = models.name = models.ForeignKey(CommunicationEvent, on_delete=models.SET_NULL, null=True, blank=True,
+    visit = models.ForeignKey(ERVisit, on_delete=models.CASCADE, related_name='failure_report')
+    comm_event = models.ForeignKey(CommunicationEvent, on_delete=models.SET_NULL, null=True, blank=True,
                                       related_name='failure_indicator')
     lwbs = models.BooleanField(default=False)
     time_to_first_contact = models.DurationField(null=True, blank=True, editable=False)

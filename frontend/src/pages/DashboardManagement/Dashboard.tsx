@@ -16,6 +16,9 @@ import DissatisfactionRiskBySection from "@/components/Charts/ERDshboardCharts/D
 import { useERDashboard } from "@/api/endpoints/DashboardEndpoint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { transformERDashboard } from "@/utils/transformERDashboard";
+import Chatbot from "@/components/AIOverlay/Chatbot";
+import MLOverlay from "@/components/AIOverlay/MLOverlay";
+import { useBusiestERSection, useMostCommonTriage, useAvgCommunicationsPerVisit, useWorstSatisfactionSection, useVisitsWithoutCommunication, useBusiestShift, useAvgTimeToFirstContactLWBS, useMostCommonFailureReason } from "@/api/endpoints/ChatBotQueries";
 
 type TrendItem = {
   section: string;
@@ -46,6 +49,57 @@ export default function ERDashboard() {
       trauma: "الإنعاش",
     },
   };
+
+  const {data: busiestER} = useBusiestERSection();
+  const {data: mostCommonTriage} = useMostCommonTriage();
+  const {data: avgComms} = useAvgCommunicationsPerVisit();
+  const {data: worstSatisfaction} = useWorstSatisfactionSection();
+  const {data: visitsNoComm} = useVisitsWithoutCommunication();
+  const {data: busiestShift} = useBusiestShift();
+  const {data: avgTimeLWBS} = useAvgTimeToFirstContactLWBS();
+  const {data: topFailure} = useMostCommonFailureReason();
+
+  
+// Chatbot Questions
+const chatbotQuestions = [
+  "Busiest ER section?",
+  "Most common triage?",
+  "Avg communications per visit?",
+  "Worst satisfaction section?",
+  "Visits with no communication?",
+  "Busiest shift?",
+  "Avg time to contact (LWBS)?",
+  "Top failure reason?",
+];
+
+// MLOverlay Questions
+const mlQuestions = [
+  "Busiest ER section?",
+  "Most common triage?",
+  "Avg communications per visit?",
+  "Worst satisfaction section?",
+  "Visits with no communication?",
+  "Busiest shift?",
+  "Avg time to contact (LWBS)?",
+  "Top failure reason?",
+];
+
+// Map questions to query data
+const answers: Record<string, any> = {
+  "Busiest ER section?": busiestER,
+  "Most common triage?": mostCommonTriage,
+  "Avg communications per visit?": avgComms,
+  "Worst satisfaction section?": worstSatisfaction,
+  "Visits with no communication?": visitsNoComm,
+  "Busiest shift?": busiestShift,
+  "Avg time to contact (LWBS)?": avgTimeLWBS,
+  "Top failure reason?": topFailure,
+};
+
+
+
+
+
   
   type DashboardData = typeof transformed
   if (isPending) {
@@ -341,7 +395,8 @@ export default function ERDashboard() {
             ]}
           /> */}
         </div>
-
+        <Chatbot questions={chatbotQuestions} answers={answers} />
+        <MLOverlay questions={mlQuestions} answers={answers} />
 
       </div>
     </div>
